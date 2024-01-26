@@ -35,6 +35,7 @@ public class BirdleGame : IDisposable
         Window = new WindowBuilder()
             .Size(1280, 720)
             .Title(GameTitle)
+            .Resizable()
             .GraphicsDeviceOptions(new GraphicsDeviceOptions()
             {
 #if DEBUG
@@ -46,8 +47,6 @@ public class BirdleGame : IDisposable
 
         SpriteRenderer = new SpriteRenderer(Device);
 
-        Texture texture = Device.CreateTexture("/home/skye/Pictures/Screenshots/Screenshot_20240124_194328.png");
-
         while (!_shouldClose)
         {
             while (Window.PollEvent(out IWindowEvent winEvent))
@@ -57,12 +56,14 @@ public class BirdleGame : IDisposable
                     case QuitEvent:
                         _shouldClose = true;
                         break;
+                    
+                    case ResizeEvent resize:
+                        Device.ResizeSwapchain(new Size(resize.Width, resize.Height));
+                        break;
                 }
             }
             
             Device.ClearColorBuffer(ColorScheme.BackgroundColor);
-            
-            SpriteRenderer.Draw(texture, new Vector2(100), Color.Red);
             
             Device.Present(1);
         }
@@ -75,6 +76,7 @@ public class BirdleGame : IDisposable
 
     public void Dispose()
     {
+        SpriteRenderer.Dispose();
         Device.Dispose();
         Window.Dispose();
 
