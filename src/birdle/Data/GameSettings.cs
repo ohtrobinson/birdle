@@ -1,4 +1,4 @@
-namespace birdle;
+namespace birdle.Data;
 
 public struct GameSettings
 {
