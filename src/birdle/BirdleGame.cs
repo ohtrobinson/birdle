@@ -30,6 +30,10 @@ public class BirdleGame : IDisposable
         Window = new WindowBuilder()
             .Size(1280, 720)
             .Title(GameTitle)
+            .GraphicsDeviceOptions(new GraphicsDeviceOptions()
+            {
+                DepthStencilBufferFormat = null // Disable the depth-stencil buffer, the game is 2D only.
+            })
             .Build(out Device);
 
         while (!_shouldClose)
