@@ -11,6 +11,13 @@
       <PackageReference Include="Pie" Version="0.10.0" />
       <PackageReference Include="Pie.Utils" Version="0.10.0" />
       <PackageReference Include="Pie.Windowing" Version="0.10.0" />
+      <PackageReference Include="StbImageSharp" Version="2.27.13" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Content\**\*">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>
