@@ -63,13 +63,14 @@ public class BirdleGame : IDisposable
                     
                     case ResizeEvent resize:
                         Device.ResizeSwapchain(new Size(resize.Width, resize.Height));
+                        Device.Viewport = new Rectangle(0, 0, resize.Width, resize.Height);
                         break;
                 }
             }
             
             Device.ClearColorBuffer(ColorScheme.BackgroundColor);
             
-            Font.Draw(SpriteRenderer, 20, "This is a test of text rendering.\nI have to say, this font looks pretty nice?", new Vector2(100), Color.White);
+            Font.Draw(SpriteRenderer, 50, "Birdle", new Vector2(Device.Viewport.Width / 2 - 100, 100), ColorScheme.TextColor);
             
             Device.Present(1);
         }
