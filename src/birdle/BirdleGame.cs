@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Numerics;
 using birdle.Audio;
+using birdle.GameModes;
 using birdle.Graphics;
 using Pie;
 using Pie.Audio;
@@ -10,34 +11,35 @@ using Pie.Windowing.Events;
 
 namespace birdle;
 
-public class BirdleGame : IDisposable
+public static class BirdleGame
 {
     public const string GameTitle = "birdle";
 
-    private bool _shouldClose;
+    private static bool _shouldClose;
 
-    public GameSettings Settings;
-    public ColorScheme ColorScheme;
+    private static GameMode _currentGameMode;
+    private static GameMode _newGameMode;
+
+    public static GameSettings Settings;
+    public static ColorScheme ColorScheme;
     
-    public Window Window;
-    public GraphicsDevice GraphicsDevice;
-    public SpriteRenderer SpriteRenderer;
+    public static Window Window;
+    public static GraphicsDevice GraphicsDevice;
+    public static SpriteRenderer SpriteRenderer;
 
-    public AudioDevice AudioDevice;
+    public static AudioDevice AudioDevice;
 
-    public Font Font;
-
-    public BirdleGame(GameSettings settings)
+    public static Font Font;
+    
+    public static void Run(GameSettings settings, GameMode initialMode)
     {
         Settings = settings;
+        _currentGameMode = initialMode;
 
         ColorScheme = settings.DarkMode ? ColorScheme.Dark : ColorScheme.Default;
 
         PieLog.DebugLog += Log;
-    }
-    
-    public void Run()
-    {
+        
         Window = new WindowBuilder()
             .Size(1280, 720)
             .Title(GameTitle)
@@ -56,6 +58,8 @@ public class BirdleGame : IDisposable
         AudioDevice = new AudioDevice(48000, 32);
 
         Font = new Font("Content/Fonts/Questrial-Regular.ttf");
+        
+        _currentGameMode.Initialize();
 
         while (!_shouldClose)
         {
@@ -75,20 +79,22 @@ public class BirdleGame : IDisposable
             }
             
             GraphicsDevice.ClearColorBuffer(ColorScheme.BackgroundColor);
+
+            if (_newGameMode != null)
+            {
+                _currentGameMode.Dispose();
+                _currentGameMode = null;
+                GC.Collect();
+                _newGameMode.Initialize();
+                _currentGameMode = _newGameMode;
+            }
             
-            
+            _currentGameMode.Update(1.0f);
+            _currentGameMode.Draw(1.0f);
             
             GraphicsDevice.Present(1);
         }
-    }
-
-    public void Close()
-    {
-        _shouldClose = true;
-    }
-
-    public void Dispose()
-    {
+        
         Font.Dispose();
         
         AudioDevice.Dispose();
@@ -98,6 +104,16 @@ public class BirdleGame : IDisposable
         Window.Dispose();
 
         PieLog.DebugLog -= Log;
+    }
+
+    public static void ChangeGameMode(GameMode mode)
+    {
+        _newGameMode = mode;
+    }
+
+    public static void Close()
+    {
+        _shouldClose = true;
     }
 
     public static void Log(LogType type, string message)

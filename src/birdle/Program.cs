@@ -1,4 +1,9 @@
 ﻿using birdle;
+using birdle.GameModes;
 
-using BirdleGame game = new BirdleGame(new GameSettings() { DarkMode = false });
-game.Run();
+GameSettings settings = new GameSettings()
+{
+    DarkMode = false
+};
+
+BirdleGame.Run(settings, new MenuMode());
