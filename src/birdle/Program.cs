@@ -1,3 +1,4 @@
-﻿using System;
+﻿using birdle;
 
-Console.WriteLine("Hello, World!");
+using BirdleGame game = new BirdleGame(new GameSettings() { DarkMode = true });
+game.Run();
