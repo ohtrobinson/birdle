@@ -5,6 +5,7 @@ using birdle.Audio;
 using birdle.Data;
 using birdle.GameModes;
 using birdle.Graphics;
+using birdle.GUI;
 using Pie;
 using Pie.Audio;
 using Pie.Windowing;
@@ -22,22 +23,19 @@ public static class BirdleGame
     private static GameMode _newGameMode;
 
     public static GameSettings Settings;
-    public static ColorScheme ColorScheme;
     
     public static Window Window;
     public static GraphicsDevice GraphicsDevice;
     public static SpriteRenderer SpriteRenderer;
 
-    public static AudioDevice AudioDevice;
+    public static UI UI;
 
-    public static Font Font;
+    public static AudioDevice AudioDevice;
     
     public static void Run(GameSettings settings, GameMode initialMode)
     {
         Settings = settings;
         _currentGameMode = initialMode;
-
-        ColorScheme = settings.DarkMode ? ColorScheme.Dark : ColorScheme.Default;
 
         PieLog.DebugLog += Log;
         
@@ -55,10 +53,11 @@ public static class BirdleGame
             .Build(out GraphicsDevice);
 
         SpriteRenderer = new SpriteRenderer(GraphicsDevice);
+        
+        Font font = new Font("Content/Fonts/Questrial-Regular.ttf");
+        UI = new UI(font, settings.DarkMode ? ColorScheme.Dark : ColorScheme.Default);
 
         AudioDevice = new AudioDevice(48000, 32);
-
-        Font = new Font("Content/Fonts/Questrial-Regular.ttf");
         
         _currentGameMode.Initialize();
 
@@ -79,7 +78,7 @@ public static class BirdleGame
                 }
             }
             
-            GraphicsDevice.ClearColorBuffer(ColorScheme.BackgroundColor);
+            GraphicsDevice.ClearColorBuffer(UI.ColorScheme.BackgroundColor);
 
             if (_newGameMode != null)
             {
@@ -89,14 +88,19 @@ public static class BirdleGame
                 _newGameMode.Initialize();
                 _currentGameMode = _newGameMode;
             }
+
+            float delta = 1.0f;
             
-            _currentGameMode.Update(1.0f);
-            _currentGameMode.Draw(1.0f);
+            _currentGameMode.Update(delta);
+            UI.Update(GraphicsDevice.Viewport.Size, delta);
+            
+            _currentGameMode.Draw(delta);
+            UI.Draw(SpriteRenderer);
             
             GraphicsDevice.Present(1);
         }
         
-        Font.Dispose();
+        UI.Font.Dispose();
         
         AudioDevice.Dispose();
         

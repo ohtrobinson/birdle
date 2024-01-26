@@ -25,4 +25,6 @@ public struct Position
         Anchor = Anchor.TopLeft;
         Offset = position;
     }
+
+    public static Position TopLeft => new Position(Anchor.TopLeft);
 }

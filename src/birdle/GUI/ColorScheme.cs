@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace birdle;
+namespace birdle.GUI;
 
 public struct ColorScheme
 {
