@@ -1,8 +1,10 @@
 using System;
 using System.Drawing;
 using System.Numerics;
+using birdle.Audio;
 using birdle.Graphics;
 using Pie;
+using Pie.Audio;
 using Pie.Windowing;
 using Pie.Windowing.Events;
 
@@ -18,8 +20,10 @@ public class BirdleGame : IDisposable
     public ColorScheme ColorScheme;
     
     public Window Window;
-    public GraphicsDevice Device;
+    public GraphicsDevice GraphicsDevice;
     public SpriteRenderer SpriteRenderer;
+
+    public AudioDevice AudioDevice;
 
     public Font Font;
 
@@ -45,9 +49,11 @@ public class BirdleGame : IDisposable
 #endif
                 DepthStencilBufferFormat = null // Disable the depth-stencil buffer, the game is 2D only.
             })
-            .Build(out Device);
+            .Build(out GraphicsDevice);
 
-        SpriteRenderer = new SpriteRenderer(Device);
+        SpriteRenderer = new SpriteRenderer(GraphicsDevice);
+
+        AudioDevice = new AudioDevice(48000, 32);
 
         Font = new Font("Content/Fonts/Questrial-Regular.ttf");
 
@@ -62,17 +68,17 @@ public class BirdleGame : IDisposable
                         break;
                     
                     case ResizeEvent resize:
-                        Device.ResizeSwapchain(new Size(resize.Width, resize.Height));
-                        Device.Viewport = new Rectangle(0, 0, resize.Width, resize.Height);
+                        GraphicsDevice.ResizeSwapchain(new Size(resize.Width, resize.Height));
+                        GraphicsDevice.Viewport = new Rectangle(0, 0, resize.Width, resize.Height);
                         break;
                 }
             }
             
-            Device.ClearColorBuffer(ColorScheme.BackgroundColor);
+            GraphicsDevice.ClearColorBuffer(ColorScheme.BackgroundColor);
             
-            Font.Draw(SpriteRenderer, 50, "Birdle", new Vector2(Device.Viewport.Width / 2 - 100, 100), ColorScheme.TextColor);
             
-            Device.Present(1);
+            
+            GraphicsDevice.Present(1);
         }
     }
 
@@ -83,8 +89,12 @@ public class BirdleGame : IDisposable
 
     public void Dispose()
     {
+        Font.Dispose();
+        
+        AudioDevice.Dispose();
+        
         SpriteRenderer.Dispose();
-        Device.Dispose();
+        GraphicsDevice.Dispose();
         Window.Dispose();
 
         PieLog.DebugLog -= Log;
