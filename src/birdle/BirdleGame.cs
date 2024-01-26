@@ -21,6 +21,8 @@ public class BirdleGame : IDisposable
     public GraphicsDevice Device;
     public SpriteRenderer SpriteRenderer;
 
+    public Font Font;
+
     public BirdleGame(GameSettings settings)
     {
         Settings = settings;
@@ -47,6 +49,8 @@ public class BirdleGame : IDisposable
 
         SpriteRenderer = new SpriteRenderer(Device);
 
+        Font = new Font("Content/Fonts/Questrial-Regular.ttf");
+
         while (!_shouldClose)
         {
             while (Window.PollEvent(out IWindowEvent winEvent))
@@ -64,6 +68,8 @@ public class BirdleGame : IDisposable
             }
             
             Device.ClearColorBuffer(ColorScheme.BackgroundColor);
+            
+            Font.Draw(SpriteRenderer, 20, "This is a test of text rendering.\nI have to say, this font looks pretty nice?", new Vector2(100), Color.White);
             
             Device.Present(1);
         }

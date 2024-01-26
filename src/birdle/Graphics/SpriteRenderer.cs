@@ -25,6 +25,8 @@ public class SpriteRenderer : IDisposable
     private RasterizerState _rasterizerState;
     private BlendState _blendState;
     private SamplerState _samplerState;
+
+    public GraphicsDevice Device => _device;
     
     public SpriteRenderer(GraphicsDevice device)
     {
