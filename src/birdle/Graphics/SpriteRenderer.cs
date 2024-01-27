@@ -118,6 +118,16 @@ public class SpriteRenderer : IDisposable
     {
         Draw(White, position, color, rotation, new Vector2(size.Width, size.Height), normalizedOrigin);
     }
+
+    public void DrawBorderRectangle(Vector2 position, Size size, Color color, int borderWidth, Vector2 origin)
+    {
+        position -= origin * new Vector2(size.Width, size.Height);
+        
+        DrawRectangle(position, new Size(size.Width, borderWidth), color, 0, Vector2.Zero);
+        DrawRectangle(position, new Size(borderWidth, size.Height), color, 0, Vector2.Zero);
+        DrawRectangle(position + new Vector2(size.Width, 0), new Size(borderWidth, size.Height), color, 0, Vector2.Zero);
+        DrawRectangle(position + new Vector2(0, size.Height), new Size(size.Width, borderWidth), color, 0, Vector2.Zero);
+    }
     
     public void Dispose()
     {

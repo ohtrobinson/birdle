@@ -16,6 +16,8 @@ public struct ColorScheme
 
     public Color EmptyColor;
 
+    public Color BorderColor;
+
     public static ColorScheme Default => new ColorScheme()
     {
         BackgroundColor = Color.Bisque,
@@ -26,7 +28,9 @@ public struct ColorScheme
         BadColor = Color.DimGray,
         
         // Bisque but darker
-        EmptyColor = Color.FromArgb(230, 205, 176)
+        EmptyColor = Color.FromArgb(230, 205, 176),
+        
+        BorderColor = Color.Black
     };
 
     public static ColorScheme Dark => new ColorScheme()
@@ -38,6 +42,8 @@ public struct ColorScheme
         AlmostColor = Color.Goldenrod,
         BadColor = Color.DimGray,
         
-        EmptyColor = Color.FromArgb(29, 29, 29)
+        EmptyColor = Color.FromArgb(29, 29, 29),
+        
+        BorderColor = Color.White
     };
 }
