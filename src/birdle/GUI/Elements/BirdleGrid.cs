@@ -15,16 +15,19 @@ public class BirdleGrid : UIElement
 
     public int Spacing;
 
+    public uint FontSize;
+
     public Slot[,] Slots;
 
     public Font Font;
     
-    public BirdleGrid(UI ui, Position position, int rows, int columns, int rectSize, int spacing) : base(ui, position)
+    public BirdleGrid(UI ui, Position position, int rows, int columns, int rectSize, int spacing, uint fontSize) : base(ui, position)
     {
         Rows = rows;
         Columns = columns;
         RectangleSize = rectSize;
         Spacing = spacing;
+        FontSize = fontSize;
 
         Slots = new Slot[columns, rows];
 
@@ -33,14 +36,20 @@ public class BirdleGrid : UIElement
 
     public override void Update(float dt, float scale)
     {
-        Size = new Size(Columns * (RectangleSize + Spacing), Rows * (RectangleSize + Spacing));
+        int rectSize = (int) (RectangleSize * scale);
+        int spacing = (int) (Spacing * scale);
+        
+        Size = new Size(Columns * (rectSize + spacing), Rows * (rectSize + spacing));
         
         base.Update(dt, scale);
     }
 
     public override void Draw(SpriteRenderer renderer, float scale)
     {
-        Size size = new Size(RectangleSize, RectangleSize);
+        int rectSize = (int) (RectangleSize * scale);
+        int spacing = (int) (Spacing * scale);
+        
+        Size size = new Size(rectSize, rectSize);
         Vector2 origin = new Vector2(0.5f);
         
         //renderer.DrawRectangle(WorldPosition, Size, Color.Black, 0, Vector2.Zero);
@@ -50,9 +59,8 @@ public class BirdleGrid : UIElement
             for (int c = 0; c < Columns; c++)
             {
                 Slot slot = Slots[c, r];
-                
-                Vector2 position = WorldPosition +
-                                   new Vector2(c * (RectangleSize + Spacing), r * (RectangleSize + Spacing));
+
+                Vector2 position = WorldPosition + new Vector2(c * (rectSize + spacing), r * (rectSize + spacing));
                 // We need to account for the fact that the origin is in the middle of the rectangle.
                 
                 Color color = slot.State switch
@@ -64,16 +72,19 @@ public class BirdleGrid : UIElement
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 
-                renderer.DrawRectangle(position + new Vector2(RectangleSize / 2), size, color, 0, origin);
+                renderer.DrawRectangle(position + new Vector2(rectSize / 2), size, color, 0, origin);
+
+                int borderWidth = int.Max(1, (int) (1 * scale));
+                renderer.DrawBorderRectangle(position + new Vector2(rectSize / 2), size, ColorScheme.BorderColor, borderWidth, origin);
                 
-                renderer.DrawBorderRectangle(position + new Vector2(RectangleSize / 2), size, ColorScheme.BorderColor, 1, origin);
-                
-                if (slot.State == SlotState.None)
+                if (slot.Character == 0)
                     continue;
 
-                Size textSize = Font.MeasureString(40, slot.Character.ToString());
+                uint fontSize = (uint) (FontSize * scale);
                 
-                Font.Draw(renderer, 40, slot.Character.ToString(), position + new Vector2(RectangleSize / 2 - textSize.Width / 2, 0), Color.White);
+                Size textSize = Font.MeasureString(fontSize, slot.Character.ToString());
+                
+                Font.Draw(renderer, fontSize, slot.Character.ToString(), position + new Vector2(rectSize / 2 - textSize.Width / 2, 0), Color.White);
             }
         }
     }

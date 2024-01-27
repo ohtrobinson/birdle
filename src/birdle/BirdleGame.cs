@@ -31,6 +31,15 @@ public static class BirdleGame
     public static UI UI;
 
     public static AudioDevice AudioDevice;
+
+    public static event OnTextInput TextInput;
+    public static event OnKeyDown   KeyDown;
+
+    static BirdleGame()
+    {
+        TextInput = delegate { };
+        KeyDown = delegate { };
+    }
     
     public static void Run(GameSettings settings, GameMode initialMode)
     {
@@ -74,6 +83,26 @@ public static class BirdleGame
                     case ResizeEvent resize:
                         GraphicsDevice.ResizeSwapchain(new Size(resize.Width, resize.Height));
                         GraphicsDevice.Viewport = new Rectangle(0, 0, resize.Width, resize.Height);
+                        break;
+                    
+                    case TextInputEvent textInput:
+                        foreach (char c in textInput.Text)
+                            TextInput!.Invoke(c);
+
+                        break;
+                    
+                    case KeyEvent keyEvent:
+                        switch (keyEvent.EventType)
+                        {
+                            case WindowEventType.KeyDown:
+                                KeyDown!.Invoke(keyEvent.Key, false);
+                                break;
+                            
+                            case WindowEventType.KeyRepeat:
+                                KeyDown!.Invoke(keyEvent.Key, true);
+                                break;
+                        }
+
                         break;
                 }
             }
@@ -128,4 +157,8 @@ public static class BirdleGame
         
         Console.WriteLine($"[{type}] {message}");
     }
+
+    public delegate void OnTextInput(char c);
+
+    public delegate void OnKeyDown(Key key, bool repeat);
 }
