@@ -79,6 +79,33 @@ public class Font : IDisposable
             currentPosition.X += character.Advance;
         }
     }
+
+    public Size MeasureString(uint size, string text)
+    {
+        Size finalSize = new Size();
+        int currentX = 0;
+        
+        foreach (char c in text)
+        {
+            switch (c)
+            {
+                case '\n':
+                    currentX = 0;
+                    finalSize.Height += (int) size;
+                    continue;
+            }
+            
+            // TODO: This likely has bad perf. This should be switched out for the cacheing system used in the Draw method.
+            Pie.Text.Character character = _face.GetCharacter(c, size);
+
+            currentX += character.Advance;
+
+            if (currentX > finalSize.Width)
+                finalSize.Width = currentX;
+        }
+
+        return finalSize;
+    }
     
     public void Dispose()
     {

@@ -1,4 +1,5 @@
-﻿using birdle.Graphics;
+﻿using System.Drawing;
+using birdle.Graphics;
 
 namespace birdle.GUI.Elements;
 
@@ -9,13 +10,15 @@ public class TextElement : UIElement
     public string Text;
 
     public uint FontSize;
-    
+
     public TextElement(UI ui, Position position, string text, uint fontSize) : base(ui, position)
     {
         Text = text;
         FontSize = fontSize;
 
         Font = ui.Font;
+
+        Size = ui.Font.MeasureString(fontSize, text);
     }
     
     public override void Draw(SpriteRenderer renderer, float scale)

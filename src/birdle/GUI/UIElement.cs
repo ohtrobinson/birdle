@@ -10,7 +10,7 @@ public abstract class UIElement
 
     public ColorScheme ColorScheme;
 
-    public virtual Size Size { get; set; }
+    public Size Size;
 
     protected internal Vector2 WorldPosition;
 
