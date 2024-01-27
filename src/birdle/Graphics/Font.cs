@@ -95,7 +95,7 @@ public class Font : IDisposable
                     continue;
             }
             
-            // TODO: This likely has bad perf. This should be switched out for the cacheing system used in the Draw method.
+            // TODO: This has bad perf. This should be switched out for the cacheing system used in the Draw method.
             Pie.Text.Character character = _face.GetCharacter(c, size);
 
             currentX += character.Advance;

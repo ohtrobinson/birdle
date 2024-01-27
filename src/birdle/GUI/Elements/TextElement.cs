@@ -20,7 +20,14 @@ public class TextElement : UIElement
 
         Size = ui.Font.MeasureString(fontSize, text);
     }
-    
+
+    public override void Update(float dt, float scale)
+    {
+        base.Update(dt, scale);
+
+        Size = Font.MeasureString(FontSize, Text);
+    }
+
     public override void Draw(SpriteRenderer renderer, float scale)
     {
         Font.Draw(renderer, (uint) (FontSize * scale), Text, WorldPosition, ColorScheme.TextColor);

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
 using birdle.GUI;
 using birdle.GUI.Elements;
@@ -25,7 +27,14 @@ public class BirdleMode : GameMode
 
         _temp = new TextElement(BirdleGame.UI, new Position(Anchor.MiddleCenter), "Nice.", 200);
 
-        _word = "penis".ToUpper();
+        List<string> words = new List<string>();
+
+        using StreamReader reader = File.OpenText("Content/wordrepo.txt");
+        string word;
+        while ((word = reader.ReadLine()) != null)
+            words.Add(word);
+        
+        _word = words[Random.Shared.Next(words.Count)].ToUpper();
         
         BirdleGame.UI.AddElement(_grid);
         
@@ -91,6 +100,15 @@ public class BirdleMode : GameMode
         else
         {
             _currentRow++;
+
+            if (_currentRow >= _grid.Rows)
+            {
+                _temp.FontSize = 100;
+                _temp.Text = $"Oof. The word was \"{_word.ToLower()}\".";
+                
+                BirdleGame.UI.AddElement(_temp);
+            }
+            
             _currentColumn = 0;
         }
     }
