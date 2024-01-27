@@ -75,7 +75,7 @@ public class Font : IDisposable
                     continue;
             }
             
-            renderer.Draw(character.Texture, currentPosition + new Vector2(character.Bearing.X, -character.Bearing.Y), color);
+            renderer.Draw(character.Texture, currentPosition + new Vector2(character.Bearing.X, -character.Bearing.Y), color, 0, Vector2.One, Vector2.Zero);
             currentPosition.X += character.Advance;
         }
     }

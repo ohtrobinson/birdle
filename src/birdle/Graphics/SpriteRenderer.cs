@@ -26,6 +26,8 @@ public class SpriteRenderer : IDisposable
     private BlendState _blendState;
     private SamplerState _samplerState;
 
+    public readonly Texture White;
+
     public GraphicsDevice Device => _device;
     
     public SpriteRenderer(GraphicsDevice device)
@@ -68,9 +70,11 @@ public class SpriteRenderer : IDisposable
         _rasterizerState = device.CreateRasterizerState(RasterizerStateDescription.CullNone);
         _blendState = device.CreateBlendState(BlendStateDescription.NonPremultiplied);
         _samplerState = device.CreateSamplerState(SamplerStateDescription.LinearClamp);
+
+        White = device.CreateTexture(new Size(1, 1), new byte[] { 255, 255, 255, 255 });
     }
 
-    public void Draw(Texture texture, Vector2 position, Color tint)
+    public void Draw(Texture texture, Vector2 position, Color tint, float rotation, Vector2 scale, Vector2 origin)
     {
         TextureDescription description = texture.Description;
         
@@ -78,7 +82,9 @@ public class SpriteRenderer : IDisposable
         Matrix4x4 projection = Matrix4x4.CreateOrthographicOffCenter(viewport.X, viewport.X + viewport.Width,
             viewport.Y + viewport.Height, viewport.Y, -1, 1);
 
-        Matrix4x4 world = Matrix4x4.CreateScale(description.Width, description.Height, 1) *
+        Matrix4x4 world = Matrix4x4.CreateTranslation(-origin.X, -origin.Y, 0) *
+                          Matrix4x4.CreateScale(description.Width * scale.X, description.Height * scale.Y, 1) *
+                          Matrix4x4.CreateRotationZ(rotation) *
                           Matrix4x4.CreateTranslation(position.X, position.Y, 0);
 
         DrawInfo info = new DrawInfo()
@@ -106,9 +112,17 @@ public class SpriteRenderer : IDisposable
         // 6 == indices.Length
         _device.DrawIndexed(6);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawRectangle(Vector2 position, Size size, Color color, float rotation, Vector2 normalizedOrigin)
+    {
+        Draw(White, position, color, rotation, new Vector2(size.Width, size.Height), normalizedOrigin);
+    }
     
     public void Dispose()
     {
+        White.Dispose();
+        
         _samplerState.Dispose();
         _blendState.Dispose();
         _rasterizerState.Dispose();

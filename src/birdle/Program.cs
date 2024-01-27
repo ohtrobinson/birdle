@@ -4,7 +4,7 @@ using birdle.GameModes;
 
 GameSettings settings = new GameSettings()
 {
-    DarkMode = false
+    DarkMode = true
 };
 
-BirdleGame.Run(settings, new MenuMode());
+BirdleGame.Run(settings, new BirdleMode());
