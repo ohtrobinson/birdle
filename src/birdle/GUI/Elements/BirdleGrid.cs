@@ -69,6 +69,7 @@ public class BirdleGrid : UIElement
                     SlotState.Bad => ColorScheme.BadColor,
                     SlotState.Almost => ColorScheme.AlmostColor,
                     SlotState.Good => ColorScheme.GoodColor,
+                    SlotState.Oops => ColorScheme.OopsColor,
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 
@@ -106,6 +107,7 @@ public class BirdleGrid : UIElement
         None,
         Bad,
         Almost,
-        Good
+        Good,
+        Oops
     }
 }

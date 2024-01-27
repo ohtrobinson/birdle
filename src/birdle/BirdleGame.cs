@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Numerics;
 using birdle.Audio;
@@ -49,7 +50,7 @@ public static class BirdleGame
         PieLog.DebugLog += Log;
         
         Window = new WindowBuilder()
-            .Size(1280, 720)
+            .Size(800, 600)
             .Title(GameTitle)
             .Resizable()
             .GraphicsDeviceOptions(new GraphicsDeviceOptions()
@@ -67,6 +68,8 @@ public static class BirdleGame
         UI = new UI(font, settings.DarkMode ? ColorScheme.Dark : ColorScheme.Default);
 
         AudioDevice = new AudioDevice(48000, 32);
+        
+        Stopwatch deltaWatch = Stopwatch.StartNew();
         
         _currentGameMode.Initialize();
 
@@ -117,8 +120,10 @@ public static class BirdleGame
                 _newGameMode.Initialize();
                 _currentGameMode = _newGameMode;
             }
-
-            float delta = 1.0f;
+            
+            double deltad = deltaWatch.Elapsed.TotalSeconds;
+            deltaWatch.Restart();
+            float delta = (float) deltad;
             
             _currentGameMode.Update(delta);
             UI.Update(GraphicsDevice.Viewport.Size, delta);

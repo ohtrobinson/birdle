@@ -21,3 +21,9 @@ three
 sandy
 spark
 stank
+seams
+snake
+balls
+stops
+court
+trees

@@ -16,6 +16,8 @@ public struct ColorScheme
 
     public Color EmptyColor;
 
+    public Color OopsColor;
+
     public Color BorderColor;
 
     public static ColorScheme Default => new ColorScheme()
@@ -30,6 +32,8 @@ public struct ColorScheme
         // Bisque but darker
         EmptyColor = Color.FromArgb(230, 205, 176),
         
+        OopsColor = Color.Red,
+        
         BorderColor = Color.Black
     };
 
@@ -43,6 +47,8 @@ public struct ColorScheme
         BadColor = Color.DimGray,
         
         EmptyColor = Color.FromArgb(29, 29, 29),
+        
+        OopsColor = Color.DarkRed,
         
         BorderColor = Color.White
     };
