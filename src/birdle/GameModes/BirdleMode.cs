@@ -20,6 +20,7 @@ public class BirdleMode : GameMode
     private TextElement _time;
     
     private Button _changeDifficulty;
+    private Checkbox _darkModeToggle;
 
     private Difficulty _difficulty;
 
@@ -72,6 +73,12 @@ public class BirdleMode : GameMode
                 BirdleGame.ChangeGameMode(new BirdleMode(_difficulty));
             });
 
+        _darkModeToggle = new Checkbox(BirdleGame.UI, new Position(Anchor.BottomRight, new Vector2(-5, -40)), new Size(30, 30), "Dark", 20, b =>
+        {
+            BirdleGame.Settings.DarkMode = b;
+            BirdleGame.UI.ColorScheme = b ? ColorScheme.Dark : ColorScheme.Default;
+        }, BirdleGame.Settings.DarkMode);
+
         _knownWords = new List<string>();
 
         using StreamReader reader = File.OpenText("Content/wordrepo.txt");
@@ -88,6 +95,7 @@ public class BirdleMode : GameMode
         BirdleGame.UI.AddElement(_grid);
         BirdleGame.UI.AddElement(_time);
         BirdleGame.UI.AddElement(_changeDifficulty);
+        BirdleGame.UI.AddElement(_darkModeToggle);
         
         BirdleGame.TextInput += BirdleGameOnTextInput;
         BirdleGame.KeyDown += BirdleGameOnKeyDown;
