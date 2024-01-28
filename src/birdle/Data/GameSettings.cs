@@ -18,6 +18,8 @@ public struct GameSettings
     
     public Difficulty Difficulty;
 
+    public float UiScale;
+
     public void Save(string path)
     {
         Dictionary<string, object> config = new Dictionary<string, object>()
@@ -26,7 +28,8 @@ public struct GameSettings
             ["window.fullscreen"] = WindowFullscreen,
             ["window.position"] = new []{ WindowPosition.X, WindowPosition.Y },
             ["darkmode"] = DarkMode,
-            ["difficulty"] = Difficulty
+            ["difficulty"] = Difficulty,
+            ["ui.scale"] = UiScale
         };
         
         File.WriteAllText(path, QuickConfig.ToQuickConfig(config));
@@ -48,6 +51,7 @@ public struct GameSettings
         settings.WindowPosition.Y = (int) (double) ((object[]) config["window.position"])[1];
         settings.DarkMode = (bool) config["darkmode"];
         settings.Difficulty = Enum.Parse<Difficulty>((string) config["difficulty"], true);
+        settings.UiScale = (float) (double) config["ui.scale"];
 
         return true;
     }
@@ -58,6 +62,7 @@ public struct GameSettings
         WindowFullscreen = false,
         WindowPosition = new Point(-1),
         DarkMode = false,
-        Difficulty = Difficulty.Normal
+        Difficulty = Difficulty.Normal,
+        UiScale = 1
     };
 }

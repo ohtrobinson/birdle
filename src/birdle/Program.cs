@@ -8,6 +8,8 @@ if (!GameSettings.TryLoad(BirdleGame.ConfigFile, out GameSettings settings))
 {
     settings = GameSettings.Default;
     settings.Save(BirdleGame.ConfigFile);
+    
+    MessageBox.Show(MessageBox.MessageBoxType.Information, "First-time launch", "Welcome! You won't see this message again.\nPlease read the README file for a quick explanation of the the game's behaviour,\nthis will eventually be made clearer.");
 }
 
 #if DEBUG

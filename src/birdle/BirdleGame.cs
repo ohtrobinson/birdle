@@ -77,6 +77,7 @@ public static class BirdleGame
         
         Font font = new Font(GraphicsDevice, "Content/Fonts/Questrial-Regular.ttf");
         UI = new UI(font, settings.DarkMode ? ColorScheme.Dark : ColorScheme.Default);
+        UI.Scale = Settings.UiScale;
 
         Input = new Input();
 
