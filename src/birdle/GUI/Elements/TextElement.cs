@@ -21,9 +21,9 @@ public class TextElement : UIElement
         Size = ui.Font.MeasureString(fontSize, text);
     }
 
-    public override void Update(float dt, float scale, ref bool mouseCaptured)
+    public override void Update(Input input, float dt, float scale, ref bool mouseCaptured)
     {
-        base.Update(dt, scale, ref mouseCaptured);
+        base.Update(input, dt, scale, ref mouseCaptured);
 
         Size size = Font.MeasureString(FontSize, Text);
         size = new Size((int) (size.Width * scale), (int) (size.Height * scale));

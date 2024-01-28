@@ -46,7 +46,7 @@ public class UI
         _elements.Clear();
     }
 
-    public void Update(Size screenSize, float dt)
+    public void Update(Input input, Size screenSize, float dt)
     {
         bool mouseCaptured = false;
         
@@ -55,7 +55,7 @@ public class UI
             UIElement element = _elements[i];
             
             element.WorldPosition = CalculateWorldPos(screenSize, element.Position, element.Size);
-            element.Update(dt, Scale, ref mouseCaptured);
+            element.Update(input, dt, Scale, ref mouseCaptured);
         }
     }
 

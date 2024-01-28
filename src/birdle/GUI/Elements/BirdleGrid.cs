@@ -34,14 +34,14 @@ public class BirdleGrid : UIElement
         Font = ui.Font;
     }
 
-    public override void Update(float dt, float scale, ref bool mouseCaptured)
+    public override void Update(Input input, float dt, float scale, ref bool mouseCaptured)
     {
+        base.Update(input, dt, scale, ref mouseCaptured);
+        
         int rectSize = (int) (RectangleSize * scale);
         int spacing = (int) (Spacing * scale);
         
         Size = new Size(Columns * (rectSize + spacing), Rows * (rectSize + spacing));
-        
-        base.Update(dt, scale, ref mouseCaptured);
     }
 
     public override void Draw(SpriteRenderer renderer, float scale)

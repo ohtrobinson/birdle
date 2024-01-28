@@ -33,6 +33,7 @@ public static class BirdleGame
     public static SpriteRenderer SpriteRenderer;
 
     public static UI UI;
+    public static Input Input;
 
     public static AudioDevice AudioDevice;
 
@@ -77,6 +78,8 @@ public static class BirdleGame
         Font font = new Font(GraphicsDevice, "Content/Fonts/Questrial-Regular.ttf");
         UI = new UI(font, settings.DarkMode ? ColorScheme.Dark : ColorScheme.Default);
 
+        Input = new Input();
+
         AudioDevice = new AudioDevice(48000, 32);
         
         Stopwatch deltaWatch = Stopwatch.StartNew();
@@ -85,6 +88,8 @@ public static class BirdleGame
 
         while (!_shouldClose)
         {
+            Input.Update();
+            
             while (Window.PollEvent(out IWindowEvent winEvent))
             {
                 switch (winEvent)
@@ -109,10 +114,33 @@ public static class BirdleGame
                         {
                             case WindowEventType.KeyDown:
                                 KeyDown!.Invoke(keyEvent.Key, false);
+                                Input.RegisterKeyDown(keyEvent.Key);
                                 break;
                             
                             case WindowEventType.KeyRepeat:
                                 KeyDown!.Invoke(keyEvent.Key, true);
+                                break;
+                            
+                            case WindowEventType.KeyUp:
+                                Input.RegisterKeyUp(keyEvent.Key);
+                                break;
+                        }
+
+                        break;
+                    
+                    case MouseMoveEvent mouseMove:
+                        Input.MousePosition = new Vector2(mouseMove.MouseX, mouseMove.MouseY);
+                        break;
+                    
+                    case MouseButtonEvent buttonEvent:
+                        switch (buttonEvent.EventType)
+                        {
+                            case WindowEventType.MouseButtonDown:
+                                Input.RegisterButtonDown(buttonEvent.Button);
+                                break;
+                            
+                            case WindowEventType.MouseButtonUp:
+                                Input.RegisterButtonUp(buttonEvent.Button);
                                 break;
                         }
 
@@ -138,7 +166,7 @@ public static class BirdleGame
             float delta = (float) deltad;
             
             _currentGameMode.Update(delta);
-            UI.Update(GraphicsDevice.Viewport.Size, delta);
+            UI.Update(Input, GraphicsDevice.Viewport.Size, delta);
             
             _currentGameMode.Draw(delta);
             UI.Draw(SpriteRenderer);

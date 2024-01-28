@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Numerics;
 using birdle.GUI;
@@ -17,6 +18,8 @@ public class BirdleMode : GameMode
 
     private Stopwatch _totalTime;
     private TextElement _time;
+    
+    private Button _changeDifficulty;
 
     private Difficulty _difficulty;
 
@@ -56,6 +59,19 @@ public class BirdleMode : GameMode
 
         _time = new TextElement(BirdleGame.UI, new Position(Anchor.TopRight, new Vector2(-5, 5)), "00:00", 20);
 
+        _changeDifficulty = new Button(BirdleGame.UI, new Position(Anchor.BottomRight, new Vector2(-5)),
+            new Size(100, 30), _difficulty.ToString(), 20,
+            () =>
+            {
+                _difficulty++;
+
+                if (_difficulty > Difficulty.Hard)
+                    _difficulty = Difficulty.Beginner;
+
+                BirdleGame.Settings.Difficulty = _difficulty;
+                BirdleGame.ChangeGameMode(new BirdleMode(_difficulty));
+            });
+
         _knownWords = new List<string>();
 
         using StreamReader reader = File.OpenText("Content/wordrepo.txt");
@@ -71,6 +87,7 @@ public class BirdleMode : GameMode
         
         BirdleGame.UI.AddElement(_grid);
         BirdleGame.UI.AddElement(_time);
+        BirdleGame.UI.AddElement(_changeDifficulty);
         
         BirdleGame.TextInput += BirdleGameOnTextInput;
         BirdleGame.KeyDown += BirdleGameOnKeyDown;
