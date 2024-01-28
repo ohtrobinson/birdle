@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using birdle.GUI;
@@ -13,6 +14,9 @@ public class BirdleMode : GameMode
 {
     private BirdleGrid _grid;
     private TextElement _temp;
+
+    private Stopwatch _totalTime;
+    private TextElement _time;
 
     private Difficulty _difficulty;
 
@@ -31,7 +35,7 @@ public class BirdleMode : GameMode
     {
         base.Initialize();
 
-        _difficulty = Difficulty.Hard;
+        _difficulty = Difficulty.Normal;
 
         int numRows = _difficulty switch
         {
@@ -47,6 +51,8 @@ public class BirdleMode : GameMode
 
         _temp = new TextElement(BirdleGame.UI, new Position(Anchor.MiddleCenter), "Nice.", 200);
 
+        _time = new TextElement(BirdleGame.UI, new Position(Anchor.TopRight), "00:00", 20);
+
         _knownWords = new List<string>();
 
         using StreamReader reader = File.OpenText("Content/wordrepo.txt");
@@ -61,9 +67,12 @@ public class BirdleMode : GameMode
         _word = _knownWords[Random.Shared.Next(_knownWords.Count)].ToUpper();
         
         BirdleGame.UI.AddElement(_grid);
+        BirdleGame.UI.AddElement(_time);
         
         BirdleGame.TextInput += BirdleGameOnTextInput;
         BirdleGame.KeyDown += BirdleGameOnKeyDown;
+        
+        _totalTime = Stopwatch.StartNew();
     }
 
     private void BirdleGameOnKeyDown(Key key, bool repeat)
@@ -180,13 +189,17 @@ public class BirdleMode : GameMode
         }
 
         if (numCorrect == _word.Length)
+        {
+            _totalTime.Stop();
             BirdleGame.UI.AddElement(_temp);
+        }
         else
         {
             _currentRow++;
 
             if (_currentRow >= _grid.Rows)
             {
+                _totalTime.Stop();
                 _temp.FontSize = 50;
                 _temp.Text = $"Oof. The word was \"{_word.ToLower()}\".";
                 
@@ -200,6 +213,12 @@ public class BirdleMode : GameMode
     public override void Update(float dt)
     {
         base.Update(dt);
+
+        TimeSpan elapsed = _totalTime.Elapsed;
+        int minutes = elapsed.Minutes;
+        int seconds = elapsed.Seconds;
+
+        _time.Text = $"{minutes:00}:{seconds:00}";
 
         if (_missingLetters)
         {

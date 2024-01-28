@@ -64,7 +64,7 @@ public static class BirdleGame
 
         SpriteRenderer = new SpriteRenderer(GraphicsDevice);
         
-        Font font = new Font("Content/Fonts/Questrial-Regular.ttf");
+        Font font = new Font(GraphicsDevice, "Content/Fonts/Questrial-Regular.ttf");
         UI = new UI(font, settings.DarkMode ? ColorScheme.Dark : ColorScheme.Default);
 
         AudioDevice = new AudioDevice(48000, 32);

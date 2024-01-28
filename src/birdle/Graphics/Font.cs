@@ -11,6 +11,8 @@ public class Font : IDisposable
 {
     private static FreeType _freeType;
 
+    private GraphicsDevice _device;
+    
     private Face _face;
 
     private Dictionary<uint, Dictionary<char, Character>> _cachedCharacters;
@@ -20,17 +22,75 @@ public class Font : IDisposable
         _freeType = new FreeType();
     }
     
-    public Font(string path)
+    public Font(GraphicsDevice device, string path)
     {
+        _device = device;
+        
         _face = _freeType.CreateFace(path);
         _cachedCharacters = new Dictionary<uint, Dictionary<char, Character>>();
     }
 
     public void Draw(SpriteRenderer renderer, uint size, string text, Vector2 position, Color color)
     {
-        Vector2 currentPosition = position + new Vector2(0, size);
+        Vector2 currentPosition = position;
+        
+        GetCharSet(size, text, out Dictionary<char, Character> characters, out int largestChar);
 
-        if (!_cachedCharacters.TryGetValue(size, out Dictionary<char, Character> characters))
+        currentPosition.Y += largestChar;
+
+        foreach (char c in text)
+        {
+            Character character = characters[c];
+            
+            switch (c)
+            {
+                case ' ':
+                    currentPosition.X += character.Advance;
+                    continue;
+
+                case '\n':
+                    currentPosition.Y += size;
+                    currentPosition.X = position.X;
+                    continue;
+            }
+
+            renderer.Draw(character.Texture, currentPosition + new Vector2(character.Bearing.X, -character.Bearing.Y),
+                color, 0, Vector2.One, Vector2.Zero);
+            currentPosition.X += character.Advance;
+        }
+    }
+
+    public Size MeasureString(uint size, string text)
+    {
+        int currentX = 0;
+        
+        GetCharSet(size, text, out Dictionary<char, Character> characters, out int largestChar);
+        Size finalSize = new Size(0, largestChar);
+        
+        foreach (char c in text)
+        {
+            switch (c)
+            {
+                case '\n':
+                    currentX = 0;
+                    finalSize.Height += (int) size;
+                    continue;
+            }
+            
+            currentX += characters[c].Advance;
+
+            if (currentX > finalSize.Width)
+                finalSize.Width = currentX;
+        }
+
+        return finalSize;
+    }
+
+    private void GetCharSet(uint size, string text, out Dictionary<char, Character> characters, out int largestChar)
+    {
+        largestChar = 0;
+        
+        if (!_cachedCharacters.TryGetValue(size, out characters))
         {
             characters = new Dictionary<char, Character>();
             _cachedCharacters.Add(size, characters);
@@ -50,7 +110,7 @@ public class Font : IDisposable
                 Texture texture = null;
                 
                 if (charSize != Size.Empty) 
-                    texture = renderer.Device.CreateTexture(charSize, ftChar.Bitmap);
+                    texture = _device.CreateTexture(charSize, ftChar.Bitmap);
 
                 character = new Character()
                 {
@@ -62,49 +122,10 @@ public class Font : IDisposable
                 
                 characters.Add(c, character);
             }
-            
-            switch (c)
-            {
-                case ' ':
-                    currentPosition.X += character.Advance;
-                    continue;
-                
-                case '\n':
-                    currentPosition.Y += size;
-                    currentPosition.X = position.X;
-                    continue;
-            }
-            
-            renderer.Draw(character.Texture, currentPosition + new Vector2(character.Bearing.X, -character.Bearing.Y), color, 0, Vector2.One, Vector2.Zero);
-            currentPosition.X += character.Advance;
+
+            if (character.Size.Height > largestChar)
+                largestChar = character.Size.Height;
         }
-    }
-
-    public Size MeasureString(uint size, string text)
-    {
-        Size finalSize = new Size();
-        int currentX = 0;
-        
-        foreach (char c in text)
-        {
-            switch (c)
-            {
-                case '\n':
-                    currentX = 0;
-                    finalSize.Height += (int) size;
-                    continue;
-            }
-            
-            // TODO: This has bad perf. This should be switched out for the cacheing system used in the Draw method.
-            Pie.Text.Character character = _face.GetCharacter(c, size);
-
-            currentX += character.Advance;
-
-            if (currentX > finalSize.Width)
-                finalSize.Width = currentX;
-        }
-
-        return finalSize;
     }
     
     public void Dispose()

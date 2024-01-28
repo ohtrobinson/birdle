@@ -84,8 +84,10 @@ public class BirdleGrid : UIElement
                 uint fontSize = (uint) (FontSize * scale);
                 
                 Size textSize = Font.MeasureString(fontSize, slot.Character.ToString());
-                
-                Font.Draw(renderer, fontSize, slot.Character.ToString(), position + new Vector2(rectSize / 2 - textSize.Width / 2, 0), Color.White);
+
+                Font.Draw(renderer, fontSize, slot.Character.ToString(),
+                    position + new Vector2(rectSize / 2 - textSize.Width / 2, rectSize / 2 - textSize.Height / 2),
+                    Color.White);
             }
         }
     }
