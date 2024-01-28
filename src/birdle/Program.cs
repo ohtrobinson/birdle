@@ -2,6 +2,7 @@
 using birdle;
 using birdle.Data;
 using birdle.GameModes;
+using Pie;
 using Pie.Windowing;
 
 if (!GameSettings.TryLoad(BirdleGame.ConfigFile, out GameSettings settings))
@@ -21,6 +22,7 @@ try
 }
 catch (Exception e)
 {
+    BirdleGame.Log(LogType.Critical, e.ToString());
     MessageBox.Show(MessageBox.MessageBoxType.Error, "Oops!", "The game crashed. Please report this to the developer:\n" + e);
 }
 #endif

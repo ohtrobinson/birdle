@@ -20,7 +20,10 @@ public static class BirdleGame
 {
     public const string GameTitle = "birdle";
     public const string ConfigFile = "Config.cfg";
+    public const string LogDir = "Logs";
 
+    private static StreamWriter _logFile;
+    
     private static bool _shouldClose;
 
     private static GameMode _currentGameMode;
@@ -50,6 +53,12 @@ public static class BirdleGame
     {
         Settings = settings;
         _currentGameMode = initialMode;
+
+        Directory.CreateDirectory(LogDir);
+        _logFile = new StreamWriter(Path.Combine(LogDir, DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss") + ".log"))
+        {
+            AutoFlush = true
+        };
 
         PieLog.DebugLog += Log;
 
@@ -203,6 +212,8 @@ public static class BirdleGame
 
     public static void Log(LogType type, string message)
     {
+        _logFile.WriteLine($"[{type}] {message}");
+        
         if (type == LogType.Critical)
             throw new Exception($"Critical error: {message}");
         
