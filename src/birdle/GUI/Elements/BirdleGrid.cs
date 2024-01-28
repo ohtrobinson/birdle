@@ -34,14 +34,14 @@ public class BirdleGrid : UIElement
         Font = ui.Font;
     }
 
-    public override void Update(float dt, float scale)
+    public override void Update(float dt, float scale, ref bool mouseCaptured)
     {
         int rectSize = (int) (RectangleSize * scale);
         int spacing = (int) (Spacing * scale);
         
         Size = new Size(Columns * (rectSize + spacing), Rows * (rectSize + spacing));
         
-        base.Update(dt, scale);
+        base.Update(dt, scale, ref mouseCaptured);
     }
 
     public override void Draw(SpriteRenderer renderer, float scale)
@@ -52,7 +52,7 @@ public class BirdleGrid : UIElement
         Size size = new Size(rectSize, rectSize);
         Vector2 origin = new Vector2(0.5f);
         
-        //renderer.DrawRectangle(WorldPosition, Size, Color.Black, 0, Vector2.Zero);
+        //renderer.DrawRectangle(WorldPosition, Size, Color.Red, 0, Vector2.Zero);
         
         for (int r = 0; r < Rows; r++)
         {

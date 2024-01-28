@@ -20,7 +20,7 @@ public abstract class UIElement
         ColorScheme = ui.ColorScheme;
     }
 
-    public virtual void Update(float dt, float scale)
+    public virtual void Update(float dt, float scale, ref bool mouseCaptured)
     {
         
     }

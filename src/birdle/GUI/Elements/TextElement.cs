@@ -21,11 +21,13 @@ public class TextElement : UIElement
         Size = ui.Font.MeasureString(fontSize, text);
     }
 
-    public override void Update(float dt, float scale)
+    public override void Update(float dt, float scale, ref bool mouseCaptured)
     {
-        base.Update(dt, scale);
+        base.Update(dt, scale, ref mouseCaptured);
 
-        Size = Font.MeasureString(FontSize, Text);
+        Size size = Font.MeasureString(FontSize, Text);
+        size = new Size((int) (size.Width * scale), (int) (size.Height * scale));
+        Size = size;
     }
 
     public override void Draw(SpriteRenderer renderer, float scale)

@@ -123,10 +123,10 @@ public class SpriteRenderer : IDisposable
     {
         position -= origin * new Vector2(size.Width, size.Height);
         
-        DrawRectangle(position, new Size(size.Width, borderWidth), color, 0, Vector2.Zero);
-        DrawRectangle(position, new Size(borderWidth, size.Height), color, 0, Vector2.Zero);
-        DrawRectangle(position + new Vector2(size.Width, 0), new Size(borderWidth, size.Height), color, 0, Vector2.Zero);
-        DrawRectangle(position + new Vector2(0, size.Height), new Size(size.Width, borderWidth), color, 0, Vector2.Zero);
+        DrawRectangle(position, new Size(size.Width + borderWidth, borderWidth), color, 0, Vector2.Zero);
+        DrawRectangle(position, new Size(borderWidth, size.Height + borderWidth), color, 0, Vector2.Zero);
+        DrawRectangle(position + new Vector2(size.Width, 0), new Size(borderWidth, size.Height + borderWidth), color, 0, Vector2.Zero);
+        DrawRectangle(position + new Vector2(0, size.Height), new Size(size.Width + borderWidth, borderWidth), color, 0, Vector2.Zero);
     }
     
     public void Dispose()

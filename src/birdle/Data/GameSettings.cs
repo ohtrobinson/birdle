@@ -56,6 +56,7 @@ public struct GameSettings
     {
         WindowSize = new Size(800, 600),
         WindowFullscreen = false,
+        WindowPosition = new Point(-1),
         DarkMode = false,
         Difficulty = Difficulty.Normal
     };

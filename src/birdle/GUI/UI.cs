@@ -9,18 +9,29 @@ namespace birdle.GUI;
 public class UI
 {
     private List<UIElement> _elements;
+    private ColorScheme _colorScheme;
     
     public float Scale;
 
     public Font Font;
 
-    public ColorScheme ColorScheme;
+    public ColorScheme ColorScheme
+    {
+        get => _colorScheme;
+        set
+        {
+            _colorScheme = value;
+            
+            foreach (UIElement element in _elements)
+                element.ColorScheme = value;
+        }
+    }
 
     public UI(Font font, ColorScheme colorScheme, float scale = 1.0f)
     {
         Scale = scale;
         Font = font;
-        ColorScheme = colorScheme;
+        _colorScheme = colorScheme;
 
         _elements = new List<UIElement>();
     }
@@ -37,12 +48,14 @@ public class UI
 
     public void Update(Size screenSize, float dt)
     {
+        bool mouseCaptured = false;
+        
         for (int i = _elements.Count - 1; i >= 0; i--)
         {
             UIElement element = _elements[i];
             
             element.WorldPosition = CalculateWorldPos(screenSize, element.Position, element.Size);
-            element.Update(dt, Scale);
+            element.Update(dt, Scale, ref mouseCaptured);
         }
     }
 
@@ -54,7 +67,7 @@ public class UI
 
     public Vector2 CalculateWorldPos(Size screenSize, Position position, Size elementSize)
     {
-        Vector2 scaledOffset = position.Offset * Scale;
+        Vector2 scaledOffset = new Vector2((int) (position.Offset.X * Scale), (int) (position.Offset.Y * Scale));
 
         Vector2 worldPosition = position.Anchor switch
         {

@@ -25,16 +25,16 @@ public struct ColorScheme
         BackgroundColor = Color.Bisque,
         TextColor = Color.Black,
         
-        GoodColor = Color.DarkGreen,
-        AlmostColor = Color.Goldenrod,
-        BadColor = Color.DimGray,
+        GoodColor = Color.LimeGreen,
+        AlmostColor = Color.Gold,
+        BadColor = Color.Lavender,
         
         // Bisque but darker
         EmptyColor = Color.FromArgb(230, 205, 176),
         
-        OopsColor = Color.Red,
+        OopsColor = Color.IndianRed,
         
-        BorderColor = Color.Black
+        BorderColor = Color.Gray
     };
 
     public static ColorScheme Dark => new ColorScheme()
@@ -46,10 +46,10 @@ public struct ColorScheme
         AlmostColor = Color.Goldenrod,
         BadColor = Color.DimGray,
         
-        EmptyColor = Color.FromArgb(29, 29, 29),
+        EmptyColor = Color.FromArgb(32, 32, 32),
         
         OopsColor = Color.DarkRed,
         
-        BorderColor = Color.White
+        BorderColor = Color.Gray
     };
 }
