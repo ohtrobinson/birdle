@@ -124,8 +124,10 @@ public static class BirdleGame
                 _currentGameMode.Dispose();
                 _currentGameMode = null;
                 GC.Collect();
+                UI.ClearElements();
                 _newGameMode.Initialize();
                 _currentGameMode = _newGameMode;
+                _newGameMode = null;
             }
             
             double deltad = deltaWatch.Elapsed.TotalSeconds;

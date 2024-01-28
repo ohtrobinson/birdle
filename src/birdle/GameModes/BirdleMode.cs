@@ -253,4 +253,12 @@ public class BirdleMode : GameMode
                 _grid.Slots[i, _currentRow].State = BirdleGrid.SlotState.None;
         }
     }
+
+    public override void Dispose()
+    {
+        BirdleGame.TextInput -= BirdleGameOnTextInput;
+        BirdleGame.KeyDown -= BirdleGameOnKeyDown;
+        
+        base.Dispose();
+    }
 }
