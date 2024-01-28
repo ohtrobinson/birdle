@@ -33,4 +33,8 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Content\Audio\" />
+    </ItemGroup>
+
 </Project>

@@ -14,7 +14,7 @@ if (!GameSettings.TryLoad(BirdleGame.ConfigFile, out GameSettings settings))
 }
 
 #if DEBUG
-BirdleGame.Run(settings, new BirdleMode(settings.Difficulty));
+BirdleGame.Run(settings, new FirstLaunchMode());
 #else
 try
 {
