@@ -14,30 +14,51 @@ public class BirdleMode : GameMode
     private BirdleGrid _grid;
     private TextElement _temp;
 
+    private Difficulty _difficulty;
+
     private int _currentColumn;
     private int _currentRow;
 
     private string _word;
 
     private float _timer;
-    private bool _flash;
+    private bool _missingLetters;
+    private bool _invalidWord;
+
+    private List<string> _knownWords;
 
     public override void Initialize()
     {
         base.Initialize();
 
-        _grid = new BirdleGrid(BirdleGame.UI, new Position(Anchor.TopCenter, new Vector2(0, 20)), 6, 5, 50, 5, 40);
+        _difficulty = Difficulty.Hard;
+
+        int numRows = _difficulty switch
+        {
+            Difficulty.Beginner => 9,
+            Difficulty.Easy => 6,
+            Difficulty.Normal => 6,
+            Difficulty.Hard => 5,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        _grid = new BirdleGrid(BirdleGame.UI, new Position(Anchor.TopCenter, new Vector2(0, 20)), numRows, 5, 50, 5,
+            40);
 
         _temp = new TextElement(BirdleGame.UI, new Position(Anchor.MiddleCenter), "Nice.", 200);
 
-        List<string> words = new List<string>();
+        _knownWords = new List<string>();
 
         using StreamReader reader = File.OpenText("Content/wordrepo.txt");
         string word;
         while ((word = reader.ReadLine()) != null)
-            words.Add(word);
-        
-        _word = words[Random.Shared.Next(words.Count)].ToUpper();
+        {
+            if (string.IsNullOrEmpty(word) || word.StartsWith('#'))
+                continue;
+            _knownWords.Add(word);
+        }
+
+        _word = _knownWords[Random.Shared.Next(_knownWords.Count)].ToUpper();
         
         BirdleGame.UI.AddElement(_grid);
         
@@ -66,6 +87,9 @@ public class BirdleMode : GameMode
 
     private void BirdleGameOnTextInput(char c)
     {
+        if (!char.IsLetter(c))
+            return;
+        
         if (_currentColumn >= _grid.Columns)
             return;
 
@@ -82,8 +106,23 @@ public class BirdleMode : GameMode
     {
         if (_currentColumn < _grid.Columns)
         {
-            _flash = true;
+            _missingLetters = true;
             return;
+        }
+
+        if (_difficulty is Difficulty.Normal or Difficulty.Hard)
+        {
+            string word = "";
+            // YUCK!!!!
+            // TODO: Replace this utter crap. You need a better system of storing the currently active word.
+            for (int i = 0; i < _grid.Columns; i++)
+                word += _grid.Slots[i, _currentRow].Character;
+
+            if (!_knownWords.Contains(word.ToLower()))
+            {
+                _invalidWord = true;
+                return;
+            }
         }
         
         int numCorrect = 0;
@@ -162,21 +201,29 @@ public class BirdleMode : GameMode
     {
         base.Update(dt);
 
-        if (_flash)
+        if (_missingLetters)
         {
             _timer += dt;
 
             for (int i = _currentColumn; i < _grid.Columns; i++)
                 _grid.Slots[i, _currentRow].State = BirdleGrid.SlotState.Oops;
+        }
+        else if (_invalidWord)
+        {
+            _timer += dt;
 
-            if (_timer >= 1.0f)
-            {
-                _flash = false;
-                _timer = 0;
+            for (int i = 0; i < _grid.Columns; i++)
+                _grid.Slots[i, _currentRow].State = BirdleGrid.SlotState.Oops;
+        }
+        
+        if (_timer >= 1.0f)
+        {
+            _missingLetters = false;
+            _invalidWord = false;
+            _timer = 0;
                 
-                for (int i = _currentColumn; i < _grid.Columns; i++)
-                    _grid.Slots[i, _currentRow].State = BirdleGrid.SlotState.None;
-            }
+            for (int i = 0; i < _grid.Columns; i++)
+                _grid.Slots[i, _currentRow].State = BirdleGrid.SlotState.None;
         }
     }
 }
