@@ -22,24 +22,24 @@ public class FirstLaunchMode : GameMode
 
         int checkBoxOffset = 50;
 
-        _welcomeText = new TextElement(BirdleGame.UI, new Position(Anchor.MiddleCenter, new Vector2(0, topPosition)), "Welcome.", 50);
-        BirdleGame.UI.AddElement(_welcomeText);
+        _welcomeText = new TextElement(new Position(Anchor.MiddleCenter, new Vector2(0, topPosition)), "Welcome.", 50);
+        UI.AddElement(_welcomeText);
 
         topPosition += spacing * 4;
 
-        _darkModeCheckbox = new Checkbox(BirdleGame.UI, new Position(Anchor.MiddleCenter, new Vector2(checkBoxOffset, topPosition)),
+        _darkModeCheckbox = new Checkbox(new Position(Anchor.MiddleCenter, new Vector2(checkBoxOffset, topPosition)),
             new Size(30, 30), "Dark Mode", 20, b =>
             {
                 BirdleGame.Settings.DarkMode = b;
-                BirdleGame.UI.ColorScheme = b ? ColorScheme.Dark : ColorScheme.Default;
+                UI.ColorScheme = b ? ColorScheme.Dark : ColorScheme.Default;
             }, BirdleGame.Settings.DarkMode);
-        BirdleGame.UI.AddElement(_darkModeCheckbox);
+        UI.AddElement(_darkModeCheckbox);
 
         topPosition += _darkModeCheckbox.Size.Height + spacing;
 
         ref Difficulty difficulty = ref BirdleGame.Settings.Difficulty;
 
-        _difficultyButtton = new Button(BirdleGame.UI, new Position(Anchor.MiddleCenter, new Vector2(0, topPosition)),
+        _difficultyButtton = new Button(new Position(Anchor.MiddleCenter, new Vector2(0, topPosition)),
             new Size(100, 30), difficulty.ToString(), 20,
             () =>
             {
@@ -52,16 +52,16 @@ public class FirstLaunchMode : GameMode
 
                 _difficultyButtton.Text = difficulty.ToString();
             });
-        BirdleGame.UI.AddElement(_difficultyButtton);
+        UI.AddElement(_difficultyButtton);
 
         topPosition += _difficultyButtton.Size.Height + spacing;
-        
-        _fullscreenCheckbox = new Checkbox(BirdleGame.UI,
-            new Position(Anchor.MiddleCenter, new Vector2(checkBoxOffset, topPosition)), new Size(30, 30), "Full screen", 20,
+
+        _fullscreenCheckbox = new Checkbox(new Position(Anchor.MiddleCenter, new Vector2(checkBoxOffset, topPosition)),
+            new Size(30, 30), "Full screen", 20,
             b =>
             {
                 BirdleGame.Window.FullscreenMode = b ? FullscreenMode.BorderlessFullscreen : FullscreenMode.Windowed;
             }, BirdleGame.Window.FullscreenMode != FullscreenMode.Windowed);
-        BirdleGame.UI.AddElement(_fullscreenCheckbox);
+        UI.AddElement(_fullscreenCheckbox);
     }
 }

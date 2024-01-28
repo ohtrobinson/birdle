@@ -20,10 +20,10 @@ public abstract class UIElement
     protected bool IsMouseButtonHeld;
     protected bool IsClicked;
 
-    protected UIElement(UI ui, Position position)
+    protected UIElement(Position position)
     {
         Position = position;
-        ColorScheme = ui.ColorScheme;
+        ColorScheme = UI.ColorScheme;
     }
 
     public virtual void Update(Input input, float dt, float scale, ref bool mouseCaptured)

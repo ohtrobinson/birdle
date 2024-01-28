@@ -53,15 +53,14 @@ public class BirdleMode : GameMode
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        _grid = new BirdleGrid(BirdleGame.UI, new Position(Anchor.TopCenter, new Vector2(0, 20)), numRows, 5, 50, 5,
-            40);
+        _grid = new BirdleGrid(new Position(Anchor.TopCenter, new Vector2(0, 20)), numRows, 5, 50, 5, 40);
 
-        _temp = new TextElement(BirdleGame.UI, new Position(Anchor.BottomCenter, new Vector2(0, -20)), "Nice.", 200);
+        _temp = new TextElement(new Position(Anchor.BottomCenter, new Vector2(0, -20)), "Nice.", 200);
 
-        _time = new TextElement(BirdleGame.UI, new Position(Anchor.TopRight, new Vector2(-5, 5)), "00:00", 20);
+        _time = new TextElement(new Position(Anchor.TopRight, new Vector2(-5, 5)), "00:00", 20);
 
-        _changeDifficulty = new Button(BirdleGame.UI, new Position(Anchor.BottomRight, new Vector2(-5)),
-            new Size(100, 30), _difficulty.ToString(), 20,
+        _changeDifficulty = new Button(new Position(Anchor.BottomRight, new Vector2(-5)), new Size(100, 30),
+            _difficulty.ToString(), 20,
             () =>
             {
                 _difficulty++;
@@ -73,11 +72,12 @@ public class BirdleMode : GameMode
                 BirdleGame.ChangeGameMode(new BirdleMode(_difficulty));
             });
 
-        _darkModeToggle = new Checkbox(BirdleGame.UI, new Position(Anchor.BottomRight, new Vector2(-5, -40)), new Size(30, 30), "Dark", 20, b =>
-        {
-            BirdleGame.Settings.DarkMode = b;
-            BirdleGame.UI.ColorScheme = b ? ColorScheme.Dark : ColorScheme.Default;
-        }, BirdleGame.Settings.DarkMode);
+        _darkModeToggle = new Checkbox(new Position(Anchor.BottomRight, new Vector2(-5, -40)), new Size(30, 30), "Dark",
+            20, b =>
+            {
+                BirdleGame.Settings.DarkMode = b;
+                UI.ColorScheme = b ? ColorScheme.Dark : ColorScheme.Default;
+            }, BirdleGame.Settings.DarkMode);
 
         _knownWords = new List<string>();
 
@@ -92,10 +92,10 @@ public class BirdleMode : GameMode
 
         _word = _knownWords[Random.Shared.Next(_knownWords.Count)].ToUpper();
         
-        BirdleGame.UI.AddElement(_grid);
-        BirdleGame.UI.AddElement(_time);
-        BirdleGame.UI.AddElement(_changeDifficulty);
-        BirdleGame.UI.AddElement(_darkModeToggle);
+        UI.AddElement(_grid);
+        UI.AddElement(_time);
+        UI.AddElement(_changeDifficulty);
+        UI.AddElement(_darkModeToggle);
         
         BirdleGame.TextInput += BirdleGameOnTextInput;
         BirdleGame.KeyDown += BirdleGameOnKeyDown;
@@ -224,7 +224,7 @@ public class BirdleMode : GameMode
         if (numCorrect == _word.Length)
         {
             _totalTime.Stop();
-            BirdleGame.UI.AddElement(_temp);
+            UI.AddElement(_temp);
         }
         else
         {
@@ -236,7 +236,7 @@ public class BirdleMode : GameMode
                 _temp.FontSize = 50;
                 _temp.Text = $"Oof. The word was \"{_word.ToLower()}\".";
                 
-                BirdleGame.UI.AddElement(_temp);
+                UI.AddElement(_temp);
             }
             
             _currentColumn = 0;

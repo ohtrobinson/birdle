@@ -6,16 +6,16 @@ using birdle.Graphics;
 
 namespace birdle.GUI;
 
-public class UI
+public static class UI
 {
-    private List<UIElement> _elements;
-    private ColorScheme _colorScheme;
+    private static List<UIElement> _elements;
+    private static ColorScheme _colorScheme;
     
-    public float Scale;
+    public static float Scale;
 
-    public Font Font;
+    public static Font Font;
 
-    public ColorScheme ColorScheme
+    public static ColorScheme ColorScheme
     {
         get => _colorScheme;
         set
@@ -27,7 +27,7 @@ public class UI
         }
     }
 
-    public UI(Font font, ColorScheme colorScheme, float scale = 1.0f)
+    public static void Initialize(Font font, ColorScheme colorScheme, float scale = 1.0f)
     {
         Scale = scale;
         Font = font;
@@ -36,17 +36,17 @@ public class UI
         _elements = new List<UIElement>();
     }
 
-    public void AddElement(UIElement element)
+    public static void AddElement(UIElement element)
     {
         _elements.Add(element);
     }
 
-    public void ClearElements()
+    public static void ClearElements()
     {
         _elements.Clear();
     }
 
-    public void Update(Input input, Size screenSize, float dt)
+    public static void Update(Input input, Size screenSize, float dt)
     {
         bool mouseCaptured = false;
         
@@ -59,13 +59,13 @@ public class UI
         }
     }
 
-    public void Draw(SpriteRenderer renderer)
+    public static void Draw(SpriteRenderer renderer)
     {
         foreach (UIElement element in _elements)
             element.Draw(renderer, Scale);
     }
 
-    public Vector2 CalculateWorldPos(Size screenSize, Position position, Size elementSize)
+    public static Vector2 CalculateWorldPos(Size screenSize, Position position, Size elementSize)
     {
         Vector2 scaledOffset = new Vector2((int) (position.Offset.X * Scale), (int) (position.Offset.Y * Scale));
 

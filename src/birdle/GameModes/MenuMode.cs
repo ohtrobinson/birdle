@@ -9,7 +9,7 @@ public class MenuMode : GameMode
     {
         base.Initialize();
 
-        TextElement text = new TextElement(BirdleGame.UI, new Position(Anchor.TopCenter), "Birdle.", 100);
-        BirdleGame.UI.AddElement(text);
+        TextElement text = new TextElement(new Position(Anchor.TopCenter), "Birdle.", 100);
+        UI.AddElement(text);
     }
 }

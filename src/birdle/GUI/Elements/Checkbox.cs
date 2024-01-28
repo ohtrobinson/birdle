@@ -17,13 +17,13 @@ public class Checkbox : UIElement
 
     public bool Checked;
 
-    public Checkbox(UI ui, Position position, Size size, string text, uint fontSize, Action<bool> check, bool isChecked = false) : base(ui, position)
+    public Checkbox(Position position, Size size, string text, uint fontSize, Action<bool> check, bool isChecked = false) : base(position)
     {
         Size = size;
 
         Text = text;
         FontSize = fontSize;
-        Font = ui.Font;
+        Font = UI.Font;
         Checked = isChecked;
 
         Check = check;

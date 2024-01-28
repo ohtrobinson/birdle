@@ -15,11 +15,11 @@ public class Button : UIElement
 
     public Font Font;
     
-    public Button(UI ui, Position position, Size size, string text, uint fontSize, Action click) : base(ui, position)
+    public Button( Position position, Size size, string text, uint fontSize, Action click) : base(position)
     {
         Size = size;
 
-        Font = ui.Font;
+        Font = UI.Font;
         Text = text;
         FontSize = fontSize;
 

@@ -21,7 +21,7 @@ public class BirdleGrid : UIElement
 
     public Font Font;
     
-    public BirdleGrid(UI ui, Position position, int rows, int columns, int rectSize, int spacing, uint fontSize) : base(ui, position)
+    public BirdleGrid(Position position, int rows, int columns, int rectSize, int spacing, uint fontSize) : base(position)
     {
         Rows = rows;
         Columns = columns;
@@ -31,7 +31,7 @@ public class BirdleGrid : UIElement
 
         Slots = new Slot[columns, rows];
 
-        Font = ui.Font;
+        Font = UI.Font;
     }
 
     public override void Update(Input input, float dt, float scale, ref bool mouseCaptured)

@@ -11,14 +11,13 @@ public class TextElement : UIElement
 
     public uint FontSize;
 
-    public TextElement(UI ui, Position position, string text, uint fontSize) : base(ui, position)
+    public TextElement(Position position, string text, uint fontSize) : base(position)
     {
         Text = text;
         FontSize = fontSize;
 
-        Font = ui.Font;
-
-        Size = ui.Font.MeasureString(fontSize, text);
+        Font = UI.Font;
+        Size = Font.MeasureString(fontSize, text);
     }
 
     public override void Update(Input input, float dt, float scale, ref bool mouseCaptured)
