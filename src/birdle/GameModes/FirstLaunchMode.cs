@@ -12,6 +12,11 @@ public class FirstLaunchMode : GameMode
     private Checkbox _darkModeCheckbox;
     private Button _difficultyButtton;
     private Checkbox _fullscreenCheckbox;
+    private Button _doneButton;
+
+    private FadeElement _fade;
+
+    private bool _done;
     
     public override void Initialize()
     {
@@ -63,5 +68,33 @@ public class FirstLaunchMode : GameMode
                 BirdleGame.Window.FullscreenMode = b ? FullscreenMode.BorderlessFullscreen : FullscreenMode.Windowed;
             }, BirdleGame.Window.FullscreenMode != FullscreenMode.Windowed);
         UI.AddElement(_fullscreenCheckbox);
+
+        topPosition += _fullscreenCheckbox.Size.Height + spacing;
+
+        _doneButton = new Button(new Position(Anchor.MiddleCenter, new Vector2(0, topPosition)), new Size(100, 30),
+            "Done", 20,
+            () =>
+            {
+                _done = true;
+            });
+        UI.AddElement(_doneButton);
+
+        _fade = new FadeElement(Position.TopLeft, BirdleGame.Window.Size, null, 0.5f, true);
+        UI.AddElement(_fade);
+        
+        _fade.FadeOut();
+    }
+
+    public override void Update(float dt)
+    {
+        base.Update(dt);
+
+        if (_done)
+        {
+            if (_fade.State == FadeElement.FadeState.FadedIn)
+                BirdleGame.ChangeGameMode(new BirdleMode(BirdleGame.Settings.Difficulty));
+            
+            _fade.FadeIn();
+        }
     }
 }

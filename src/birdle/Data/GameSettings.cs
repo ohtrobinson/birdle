@@ -22,6 +22,9 @@ public struct GameSettings
 
     public void Save(string path)
     {
+        // The constant need to delete the config file is being annoying during development...
+        // So in debug mode saving just never actually happens.
+#if !DEBUG
         Dictionary<string, object> config = new Dictionary<string, object>()
         {
             ["window.size"] = new []{ WindowSize.Width, WindowSize.Height },
@@ -33,6 +36,7 @@ public struct GameSettings
         };
         
         File.WriteAllText(path, QuickConfig.ToQuickConfig(config));
+#endif
     }
 
     public static bool TryLoad(string path, out GameSettings settings)

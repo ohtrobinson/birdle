@@ -22,6 +22,8 @@ public class BirdleMode : GameMode
     private Button _changeDifficulty;
     private Checkbox _darkModeToggle;
 
+    private FadeElement _fade;
+
     private Difficulty _difficulty;
 
     private int _currentColumn;
@@ -96,11 +98,16 @@ public class BirdleMode : GameMode
         UI.AddElement(_time);
         UI.AddElement(_changeDifficulty);
         UI.AddElement(_darkModeToggle);
+
+        _fade = new FadeElement(Position.TopLeft, BirdleGame.GraphicsDevice.Viewport.Size, null, 0.5f, true);
+        UI.AddElement(_fade);
         
         BirdleGame.TextInput += BirdleGameOnTextInput;
         BirdleGame.KeyDown += BirdleGameOnKeyDown;
         
         _totalTime = Stopwatch.StartNew();
+        
+        _fade.FadeOut();
     }
 
     private void BirdleGameOnKeyDown(Key key, bool repeat)
@@ -122,7 +129,7 @@ public class BirdleMode : GameMode
             
             // TODO: Yknow.. this is temporary.
             case Key.Space when !_totalTime.IsRunning:
-                BirdleGame.ChangeGameMode(new BirdleMode(_difficulty));
+                _fade.FadeIn();
                 break;
         }
     }
@@ -277,6 +284,9 @@ public class BirdleMode : GameMode
             for (int i = 0; i < _grid.Columns; i++)
                 _grid.Slots[i, _currentRow].State = BirdleGrid.SlotState.None;
         }
+        
+        if (_fade.State == FadeElement.FadeState.FadedIn)
+            BirdleGame.ChangeGameMode(new BirdleMode(_difficulty));
     }
 
     public override void Dispose()

@@ -5,16 +5,21 @@ using birdle.GameModes;
 using Pie;
 using Pie.Windowing;
 
+bool firstTimeLaunch = false;
+
 if (!GameSettings.TryLoad(BirdleGame.ConfigFile, out GameSettings settings))
 {
     settings = GameSettings.Default;
-    settings.Save(BirdleGame.ConfigFile);
+    firstTimeLaunch = true;
     
+    settings.Save(BirdleGame.ConfigFile);
+#if !DEBUG
     MessageBox.Show(MessageBox.MessageBoxType.Information, "First-time launch", "Welcome! You won't see this message again.\nPlease read the README file for a quick explanation of the the game's behaviour,\nthis will eventually be made clearer.");
+#endif
 }
 
 #if DEBUG
-BirdleGame.Run(settings, new FirstLaunchMode());
+BirdleGame.Run(settings, new BootMode(firstTimeLaunch));
 #else
 try
 {
