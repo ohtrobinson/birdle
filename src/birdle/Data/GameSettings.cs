@@ -20,15 +20,13 @@ public struct GameSettings
 
     public void Save(string path)
     {
-        Dictionary<string, string> config = new Dictionary<string, string>()
+        Dictionary<string, object> config = new Dictionary<string, object>()
         {
-            //["window.size.width"] = WindowSize.Width.ToString(),
-            //["window.size.height"] = WindowSize.Height.ToString(),
-            //["window.fullscreen"] = WindowFullscreen ? "true" : "false",
-            //["window.position.x"] = WindowPosition.X.ToString(),
-            //["window.position.y"] = WindowPosition.Y.ToString(),
-            ["darkmode"] = DarkMode ? "true" : "false",
-            ["difficulty"] = Difficulty.ToString().ToLower()
+            ["window.size"] = new []{ WindowSize.Width, WindowSize.Height },
+            ["window.fullscreen"] = WindowFullscreen,
+            ["window.position"] = new []{ WindowPosition.X, WindowPosition.Y },
+            ["darkmode"] = DarkMode,
+            ["difficulty"] = Difficulty
         };
         
         File.WriteAllText(path, QuickConfig.ToQuickConfig(config));
@@ -41,15 +39,15 @@ public struct GameSettings
         if (!File.Exists(path))
             return false;
 
-        Dictionary<string, string> config = QuickConfig.Parse(File.ReadAllText(path));
-        
-        //settings.WindowSize.Width = int.Parse(config["window.size.width"]);
-        //settings.WindowSize.Height = int.Parse(config["window.size.height"]);
-        //settings.WindowFullscreen = bool.Parse(config["window.fullscreen"]);
-        //settings.WindowPosition.X = int.Parse(config["window.position.x"]);
-        //settings.WindowPosition.Y = int.Parse(config["window.position.y"]);
-        settings.DarkMode = bool.Parse(config["darkmode"]);
-        settings.Difficulty = Enum.Parse<Difficulty>(config["difficulty"], true);
+        Dictionary<string, object> config = QuickConfig.Parse(File.ReadAllText(path));
+
+        settings.WindowSize.Width = (int) (double) ((object[]) config["window.size"])[0];
+        settings.WindowSize.Height = (int) (double) ((object[]) config["window.size"])[1];
+        settings.WindowFullscreen = (bool) config["window.fullscreen"];
+        settings.WindowPosition.X = (int) (double) ((object[]) config["window.position"])[0];
+        settings.WindowPosition.Y = (int) (double) ((object[]) config["window.position"])[1];
+        settings.DarkMode = (bool) config["darkmode"];
+        settings.Difficulty = Enum.Parse<Difficulty>((string) config["difficulty"], true);
 
         return true;
     }

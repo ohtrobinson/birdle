@@ -69,6 +69,9 @@ public static class BirdleGame
             })
             .Build(out GraphicsDevice);
 
+        if (Settings.WindowPosition.X != -1 && Settings.WindowPosition.Y != -1)
+            Window.Position = Settings.WindowPosition;
+
         SpriteRenderer = new SpriteRenderer(GraphicsDevice);
         
         Font font = new Font(GraphicsDevice, "Content/Fonts/Questrial-Regular.ttf");
