@@ -2,9 +2,10 @@
 using birdle.Data;
 using birdle.GameModes;
 
-GameSettings settings = new GameSettings()
+if (!GameSettings.TryLoad(BirdleGame.ConfigFile, out GameSettings settings))
 {
-    DarkMode = true
-};
+    settings = GameSettings.Default;
+    settings.Save(BirdleGame.ConfigFile);
+}
 
-BirdleGame.Run(settings, new BirdleMode());
+BirdleGame.Run(settings, new BirdleMode(settings.Difficulty));

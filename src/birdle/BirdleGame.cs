@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Numerics;
 using birdle.Audio;
 using birdle.Data;
@@ -11,12 +12,14 @@ using Pie;
 using Pie.Audio;
 using Pie.Windowing;
 using Pie.Windowing.Events;
+using StbImageSharp;
 
 namespace birdle;
 
 public static class BirdleGame
 {
     public const string GameTitle = "birdle";
+    public const string ConfigFile = "Config.cfg";
 
     private static bool _shouldClose;
 
@@ -48,11 +51,15 @@ public static class BirdleGame
         _currentGameMode = initialMode;
 
         PieLog.DebugLog += Log;
+
+        ImageResult icon = ImageResult.FromMemory(File.ReadAllBytes("icon.bmp"), ColorComponents.RedGreenBlueAlpha);
         
         Window = new WindowBuilder()
-            .Size(800, 600)
+            .Size(settings.WindowSize.Width, settings.WindowSize.Height)
             .Title(GameTitle)
+            .FullscreenMode(settings.WindowFullscreen ? FullscreenMode.BorderlessFullscreen : FullscreenMode.Windowed)
             .Resizable()
+            .Icon(new Icon((uint) icon.Width, (uint) icon.Height, icon.Data))
             .GraphicsDeviceOptions(new GraphicsDeviceOptions()
             {
 #if DEBUG
@@ -133,6 +140,11 @@ public static class BirdleGame
             
             GraphicsDevice.Present(1);
         }
+
+        Settings.WindowSize = Window.Size;
+        Settings.WindowFullscreen = Window.FullscreenMode != FullscreenMode.Windowed;
+        Settings.WindowPosition = Window.Position;
+        Settings.Save(ConfigFile);
         
         UI.Font.Dispose();
         

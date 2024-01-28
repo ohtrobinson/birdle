@@ -87,7 +87,7 @@ public class BirdleGrid : UIElement
 
                 Font.Draw(renderer, fontSize, slot.Character.ToString(),
                     position + new Vector2(rectSize / 2 - textSize.Width / 2, rectSize / 2 - textSize.Height / 2),
-                    Color.White);
+                    ColorScheme.TextColor);
             }
         }
     }

@@ -31,11 +31,14 @@ public class BirdleMode : GameMode
 
     private List<string> _knownWords;
 
+    public BirdleMode(Difficulty difficulty)
+    {
+        _difficulty = difficulty;
+    }
+
     public override void Initialize()
     {
         base.Initialize();
-
-        _difficulty = Difficulty.Normal;
 
         int numRows = _difficulty switch
         {
@@ -49,9 +52,9 @@ public class BirdleMode : GameMode
         _grid = new BirdleGrid(BirdleGame.UI, new Position(Anchor.TopCenter, new Vector2(0, 20)), numRows, 5, 50, 5,
             40);
 
-        _temp = new TextElement(BirdleGame.UI, new Position(Anchor.MiddleCenter), "Nice.", 200);
+        _temp = new TextElement(BirdleGame.UI, new Position(Anchor.BottomCenter, new Vector2(0, -20)), "Nice.", 200);
 
-        _time = new TextElement(BirdleGame.UI, new Position(Anchor.TopRight), "00:00", 20);
+        _time = new TextElement(BirdleGame.UI, new Position(Anchor.TopRight, new Vector2(-5, 5)), "00:00", 20);
 
         _knownWords = new List<string>();
 
@@ -90,6 +93,11 @@ public class BirdleMode : GameMode
                 _currentColumn--;
                 _grid.Slots[_currentColumn, _currentRow].Character = char.MinValue;
                 
+                break;
+            
+            // TODO: Yknow.. this is temporary.
+            case Key.Space when !_totalTime.IsRunning:
+                BirdleGame.ChangeGameMode(new BirdleMode(_difficulty));
                 break;
         }
     }
