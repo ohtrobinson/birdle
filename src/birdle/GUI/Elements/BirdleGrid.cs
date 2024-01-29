@@ -38,10 +38,7 @@ public class BirdleGrid : UIElement
     {
         base.Update(input, dt, scale, ref mouseCaptured);
         
-        int rectSize = (int) (RectangleSize * scale);
-        int spacing = (int) (Spacing * scale);
-        
-        Size = new Size(Columns * (rectSize + spacing), Rows * (rectSize + spacing));
+        Size = new Size(Columns * (RectangleSize + Spacing), Rows * (RectangleSize + Spacing));
     }
 
     public override void Draw(SpriteRenderer renderer, float scale)

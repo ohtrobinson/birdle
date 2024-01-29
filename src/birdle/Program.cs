@@ -19,7 +19,7 @@ if (!GameSettings.TryLoad(BirdleGame.ConfigFile, out GameSettings settings))
 }
 
 #if DEBUG
-BirdleGame.Run(settings, new BootMode(firstTimeLaunch));
+BirdleGame.Run(settings, new MenuMode());
 #else
 try
 {

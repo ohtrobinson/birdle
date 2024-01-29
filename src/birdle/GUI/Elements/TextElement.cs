@@ -24,9 +24,7 @@ public class TextElement : UIElement
     {
         base.Update(input, dt, scale, ref mouseCaptured);
 
-        Size size = Font.MeasureString(FontSize, Text);
-        size = new Size((int) (size.Width * scale), (int) (size.Height * scale));
-        Size = size;
+        Size = Font.MeasureString(FontSize, Text);
     }
 
     public override void Draw(SpriteRenderer renderer, float scale)

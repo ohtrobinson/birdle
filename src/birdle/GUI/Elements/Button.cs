@@ -43,13 +43,17 @@ public class Button : UIElement
         else if (IsHovered)
             buttonColor = ColorScheme.BackgroundColor;
         
-        renderer.DrawRectangle(WorldPosition, Size, buttonColor, 0, Vector2.Zero);
-        renderer.DrawBorderRectangle(WorldPosition, Size, ColorScheme.BorderColor, 1, Vector2.Zero);
+        uint fontSize = (uint) (FontSize * scale);
+        Size size = new Size((int) (Size.Width * scale), (int) (Size.Height * scale));
+        int borderWidth = int.Max((int) (1 * scale), 1);
+        
+        renderer.DrawRectangle(WorldPosition, size, buttonColor, 0, Vector2.Zero);
+        renderer.DrawBorderRectangle(WorldPosition, size, ColorScheme.BorderColor, borderWidth, Vector2.Zero);
+        
+        Size textSize = Font.MeasureString(fontSize, Text);
 
-        Size textSize = Font.MeasureString(FontSize, Text);
-
-        Font.Draw(renderer, FontSize, Text,
-            WorldPosition + new Vector2(Size.Width / 2 - textSize.Width / 2, Size.Height / 2 - textSize.Height / 2),
+        Font.Draw(renderer, fontSize, Text,
+            WorldPosition + new Vector2(size.Width / 2 - textSize.Width / 2, size.Height / 2 - textSize.Height / 2),
             ColorScheme.TextColor);
     }
 }

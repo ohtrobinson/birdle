@@ -49,18 +49,24 @@ public class Checkbox : UIElement
         else if (IsHovered)
             boxColor = ColorScheme.BackgroundColor;
         
-        renderer.DrawRectangle(WorldPosition, Size, boxColor, 0, Vector2.Zero);
-        renderer.DrawBorderRectangle(WorldPosition, Size, ColorScheme.BorderColor, 1, Vector2.Zero);
+        uint fontSize = (uint) (FontSize * scale);
+        Size size = new Size((int) (Size.Width * scale), (int) (Size.Height * scale));
+        int borderWidth = int.Max((int) (1 * scale), 1);
+        
+        renderer.DrawRectangle(WorldPosition, size, boxColor, 0, Vector2.Zero);
+        renderer.DrawBorderRectangle(WorldPosition, size, ColorScheme.BorderColor, borderWidth, Vector2.Zero);
 
+        int padding = (int) (5 * scale);
+        
         if (Checked)
         {
-            renderer.DrawRectangle(WorldPosition + new Vector2(5), Size - new Size(10, 10), ColorScheme.BadColor, 0,
-                Vector2.Zero);
+            renderer.DrawRectangle(WorldPosition + new Vector2(padding), size - new Size(padding * 2, padding * 2),
+                ColorScheme.BadColor, 0, Vector2.Zero);
         }
 
-        Size textSize = Font.MeasureString(FontSize, Text);
+        Size textSize = Font.MeasureString(fontSize, Text);
 
-        Font.Draw(renderer, FontSize, Text, WorldPosition + new Vector2(-textSize.Width - 5, textSize.Height / 2),
+        Font.Draw(renderer, fontSize, Text, WorldPosition + new Vector2(-textSize.Width - padding, textSize.Height / 2),
             ColorScheme.TextColor);
     }
 }

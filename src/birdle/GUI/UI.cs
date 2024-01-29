@@ -68,18 +68,19 @@ public static class UI
     public static Vector2 CalculateWorldPos(Size screenSize, Position position, Size elementSize)
     {
         Vector2 scaledOffset = new Vector2((int) (position.Offset.X * Scale), (int) (position.Offset.Y * Scale));
+        Size scaledSize = new Size((int) (elementSize.Width * Scale), (int) (elementSize.Height * Scale));
 
         Vector2 worldPosition = position.Anchor switch
         {
             Anchor.TopLeft => Vector2.Zero,
-            Anchor.TopCenter => new Vector2(screenSize.Width / 2 - elementSize.Width / 2, 0),
-            Anchor.TopRight => new Vector2(screenSize.Width - elementSize.Width, 0),
-            Anchor.MiddleLeft => new Vector2(0, screenSize.Height / 2 - elementSize.Height / 2),
-            Anchor.MiddleCenter => new Vector2(screenSize.Width / 2 - elementSize.Width / 2, screenSize.Height / 2 - elementSize.Height / 2),
-            Anchor.MiddleRight => new Vector2(screenSize.Width - elementSize.Width, screenSize.Height / 2 - elementSize.Height / 2),
-            Anchor.BottomLeft => new Vector2(0, screenSize.Height - elementSize.Height),
-            Anchor.BottomCenter => new Vector2(screenSize.Width / 2 - elementSize.Width / 2, screenSize.Height - elementSize.Height),
-            Anchor.BottomRight => new Vector2(screenSize.Width - elementSize.Width, screenSize.Height - elementSize.Height),
+            Anchor.TopCenter => new Vector2(screenSize.Width / 2 - scaledSize.Width / 2, 0),
+            Anchor.TopRight => new Vector2(screenSize.Width - scaledSize.Width, 0),
+            Anchor.MiddleLeft => new Vector2(0, screenSize.Height / 2 - scaledSize.Height / 2),
+            Anchor.MiddleCenter => new Vector2(screenSize.Width / 2 - scaledSize.Width / 2, screenSize.Height / 2 - scaledSize.Height / 2),
+            Anchor.MiddleRight => new Vector2(screenSize.Width - scaledSize.Width, screenSize.Height / 2 - scaledSize.Height / 2),
+            Anchor.BottomLeft => new Vector2(0, screenSize.Height - scaledSize.Height),
+            Anchor.BottomCenter => new Vector2(screenSize.Width / 2 - scaledSize.Width / 2, screenSize.Height - scaledSize.Height),
+            Anchor.BottomRight => new Vector2(screenSize.Width - scaledSize.Width, screenSize.Height - scaledSize.Height),
             _ => throw new ArgumentOutOfRangeException()
         };
 

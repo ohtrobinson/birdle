@@ -31,10 +31,13 @@ public abstract class UIElement
         Vector2 mPos = input.MousePosition;
         
         IsClicked = false;
+
+        // TODO: Okay, this DEFINITELY needs a better way of doing this, rather than multiplying by scale all the time.
+        Size size = new Size((int) (Size.Width * scale), (int) (Size.Height * scale));
         
         if (!mouseCaptured &&
             mPos.X >= WorldPosition.X && mPos.Y >= WorldPosition.Y &&
-            mPos.X < WorldPosition.X + Size.Width && mPos.Y < WorldPosition.Y + Size.Height)
+            mPos.X < WorldPosition.X + size.Width && mPos.Y < WorldPosition.Y + size.Height)
         {
             mouseCaptured = true;
             IsHovered = true;
