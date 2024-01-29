@@ -1,0 +1,25 @@
+name: Publish
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        submodules: 'recursive'
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+    - name: Publish
+      run: dotnet publish -o publish
+    - uses: actions/upload-artifact@v3
+      with:
+        name: birdle-${{ matrix.os }}
+        path: publish/
