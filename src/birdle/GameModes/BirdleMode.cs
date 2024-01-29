@@ -83,7 +83,7 @@ public class BirdleMode : GameMode
 
         _knownWords = new List<string>();
 
-        using StreamReader reader = File.OpenText("Content/wordrepo.txt");
+        using StreamReader reader = File.OpenText("Content/Words/words5.wb");
         string word;
         while ((word = reader.ReadLine()) != null)
         {
