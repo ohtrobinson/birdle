@@ -23,7 +23,7 @@ BirdleGame.Run(settings, new BootMode(firstTimeLaunch));
 #else
 try
 {
-    BirdleGame.Run(settings, new BirdleMode(settings.Difficulty));
+    BirdleGame.Run(settings, new BootMode(firstTimeLaunch));
 }
 catch (Exception e)
 {

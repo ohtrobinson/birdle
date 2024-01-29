@@ -10,7 +10,7 @@ namespace birdle.GameModes;
 public class BootMode : GameMode
 {
     private Texture _texture;
-    private Sound _sound;
+    //private Sound _sound;
 
     private float _timer;
     private float _alpha;
@@ -29,7 +29,7 @@ public class BootMode : GameMode
         base.Initialize();
 
         _texture = BirdleGame.GraphicsDevice.CreateTexture("Content/aglogo.png");
-        _sound = new Sound(BirdleGame.AudioDevice, "Content/Audio/intro.wav");
+        //_sound = new Sound(BirdleGame.AudioDevice, "Content/Audio/intro.wav");
         
         _alpha = 0;
     }
@@ -47,7 +47,7 @@ public class BootMode : GameMode
             _alpha = 1.0f;
             if (!_hasPlayedSound)
             {
-                _sound.Play();
+                //_sound.Play();
                 _hasPlayedSound = true;
             }
         }
@@ -80,6 +80,6 @@ public class BootMode : GameMode
         base.Dispose();
         
         _texture.Dispose();
-        _sound.Dispose();
+        //_sound.Dispose();
     }
 }
