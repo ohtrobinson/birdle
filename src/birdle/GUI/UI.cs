@@ -54,6 +54,9 @@ public static class UI
         {
             UIElement element = _elements[i];
             
+            if (!element.Visible)
+                continue;
+            
             element.WorldPosition = CalculateWorldPos(screenSize, element.Position, element.Size);
             element.Update(input, dt, Scale, ref mouseCaptured);
         }
@@ -62,7 +65,12 @@ public static class UI
     public static void Draw(SpriteRenderer renderer)
     {
         foreach (UIElement element in _elements)
+        {
+            if (!element.Visible)
+                continue;
+            
             element.Draw(renderer, Scale);
+        }
     }
 
     public static Vector2 CalculateWorldPos(Size screenSize, Position position, Size elementSize)

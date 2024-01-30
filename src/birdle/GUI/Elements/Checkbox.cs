@@ -45,7 +45,7 @@ public class Checkbox : UIElement
         Color boxColor = ColorScheme.EmptyColor;
         
         if (IsMouseButtonHeld)
-            boxColor = Color.Red;
+            boxColor = ColorScheme.ClickColor;
         else if (IsHovered)
             boxColor = ColorScheme.BackgroundColor;
         

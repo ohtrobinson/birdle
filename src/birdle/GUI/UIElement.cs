@@ -14,6 +14,8 @@ public abstract class UIElement
 
     public Size Size;
 
+    public bool Visible;
+
     protected internal Vector2 WorldPosition;
 
     protected bool IsHovered;
@@ -24,6 +26,7 @@ public abstract class UIElement
     {
         Position = position;
         ColorScheme = UI.ColorScheme;
+        Visible = true;
     }
 
     public virtual void Update(Input input, float dt, float scale, ref bool mouseCaptured)

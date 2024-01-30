@@ -20,6 +20,8 @@ public struct ColorScheme
 
     public Color BorderColor;
 
+    public Color ClickColor;
+
     public static ColorScheme Default => new ColorScheme()
     {
         BackgroundColor = Color.Bisque,
@@ -34,7 +36,9 @@ public struct ColorScheme
         
         OopsColor = Color.IndianRed,
         
-        BorderColor = Color.Gray
+        BorderColor = Color.Gray,
+        
+        ClickColor = Color.Beige
     };
 
     public static ColorScheme Dark => new ColorScheme()
@@ -50,6 +54,8 @@ public struct ColorScheme
         
         OopsColor = Color.DarkRed,
         
-        BorderColor = Color.Gray
+        BorderColor = Color.Gray,
+        
+        ClickColor = Color.FromArgb(60, 60, 60)
     };
 }

@@ -39,7 +39,7 @@ public class Button : UIElement
         Color buttonColor = ColorScheme.EmptyColor;
         
         if (IsMouseButtonHeld)
-            buttonColor = Color.Red;
+            buttonColor = ColorScheme.ClickColor;
         else if (IsHovered)
             buttonColor = ColorScheme.BackgroundColor;
         

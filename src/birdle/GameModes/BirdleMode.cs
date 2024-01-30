@@ -54,10 +54,16 @@ public class BirdleMode : GameMode
         };
 
         _grid = new BirdleGrid(new Position(Anchor.TopCenter, new Vector2(0, 20)), numRows, 5, 50, 5, 40);
+        UI.AddElement(_grid);
 
-        _temp = new TextElement(new Position(Anchor.BottomCenter, new Vector2(0, -100)), "Well done!\nPress space to restart.", 30);
+        _temp = new TextElement(new Position(Anchor.BottomCenter, new Vector2(0, -100)), "Well done!\nPress space to restart.", 30)
+        {
+            Visible = false
+        };
+        UI.AddElement(_temp);
 
         _time = new TextElement(new Position(Anchor.TopRight, new Vector2(-5, 5)), "00:00", 20);
+        UI.AddElement(_time);
 
         _knownWords = new List<string>();
 
@@ -71,9 +77,6 @@ public class BirdleMode : GameMode
         }
 
         _word = _knownWords[Random.Shared.Next(_knownWords.Count)].ToUpper();
-        
-        UI.AddElement(_grid);
-        UI.AddElement(_time);
 
         _fade = new FadeElement(null, 0.5f, true);
         UI.AddElement(_fade);
@@ -213,7 +216,7 @@ public class BirdleMode : GameMode
         if (numCorrect == _word.Length)
         {
             _totalTime.Stop();
-            UI.AddElement(_temp);
+            _temp.Visible = true;
         }
         else
         {
@@ -224,8 +227,8 @@ public class BirdleMode : GameMode
                 _totalTime.Stop();
                 _temp.FontSize = 30;
                 _temp.Text = $"\nThe word was \"{_word.ToLower()}\".\nPress space to restart.";
-                
-                UI.AddElement(_temp);
+
+                _temp.Visible = true;
             }
             
             _currentColumn = 0;
