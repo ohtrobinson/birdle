@@ -18,11 +18,9 @@ public class BirdleMode : GameMode
 
     private Stopwatch _totalTime;
     private TextElement _time;
-    
-    private Button _changeDifficulty;
-    private Checkbox _darkModeToggle;
 
     private FadeElement _fade;
+    private GameMode _setGameMode;
 
     private Difficulty _difficulty;
 
@@ -57,29 +55,9 @@ public class BirdleMode : GameMode
 
         _grid = new BirdleGrid(new Position(Anchor.TopCenter, new Vector2(0, 20)), numRows, 5, 50, 5, 40);
 
-        _temp = new TextElement(new Position(Anchor.BottomCenter, new Vector2(0, -20)), "Nice.", 200);
+        _temp = new TextElement(new Position(Anchor.BottomCenter, new Vector2(0, -100)), "Well done!\nPress space to restart.", 30);
 
         _time = new TextElement(new Position(Anchor.TopRight, new Vector2(-5, 5)), "00:00", 20);
-
-        _changeDifficulty = new Button(new Position(Anchor.BottomRight, new Vector2(-5)), new Size(100, 30),
-            _difficulty.ToString(), 20,
-            () =>
-            {
-                _difficulty++;
-
-                if (_difficulty > Difficulty.Hard)
-                    _difficulty = Difficulty.Beginner;
-
-                BirdleGame.Settings.Difficulty = _difficulty;
-                BirdleGame.ChangeGameMode(new BirdleMode(_difficulty));
-            });
-
-        _darkModeToggle = new Checkbox(new Position(Anchor.BottomRight, new Vector2(-5, -40)), new Size(30, 30), "Dark",
-            20, b =>
-            {
-                BirdleGame.Settings.DarkMode = b;
-                UI.ColorScheme = b ? ColorScheme.Dark : ColorScheme.Default;
-            }, BirdleGame.Settings.DarkMode);
 
         _knownWords = new List<string>();
 
@@ -96,10 +74,8 @@ public class BirdleMode : GameMode
         
         UI.AddElement(_grid);
         UI.AddElement(_time);
-        UI.AddElement(_changeDifficulty);
-        UI.AddElement(_darkModeToggle);
 
-        _fade = new FadeElement(Position.TopLeft, BirdleGame.GraphicsDevice.Viewport.Size, null, 0.5f, true);
+        _fade = new FadeElement(null, 0.5f, true);
         UI.AddElement(_fade);
         
         BirdleGame.TextInput += BirdleGameOnTextInput;
@@ -127,8 +103,14 @@ public class BirdleMode : GameMode
                 
                 break;
             
+            case Key.Escape:
+                _setGameMode = new MenuMode();
+                _fade.FadeIn();
+                break;
+            
             // TODO: Yknow.. this is temporary.
             case Key.Space when !_totalTime.IsRunning:
+                _setGameMode = new BirdleMode(_difficulty);
                 _fade.FadeIn();
                 break;
         }
@@ -240,8 +222,8 @@ public class BirdleMode : GameMode
             if (_currentRow >= _grid.Rows)
             {
                 _totalTime.Stop();
-                _temp.FontSize = 50;
-                _temp.Text = $"Oof. The word was \"{_word.ToLower()}\".";
+                _temp.FontSize = 30;
+                _temp.Text = $"\nThe word was \"{_word.ToLower()}\".\nPress space to restart.";
                 
                 UI.AddElement(_temp);
             }
@@ -286,7 +268,7 @@ public class BirdleMode : GameMode
         }
         
         if (_fade.State == FadeElement.FadeState.FadedIn)
-            BirdleGame.ChangeGameMode(new BirdleMode(_difficulty));
+            BirdleGame.ChangeGameMode(_setGameMode);
     }
 
     public override void Dispose()

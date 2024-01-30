@@ -71,9 +71,9 @@ public static class BirdleGame
             .Icon(new Icon((uint) icon.Width, (uint) icon.Height, icon.Data))
             .GraphicsDeviceOptions(new GraphicsDeviceOptions()
             {
-#if DEBUG
+//#if DEBUG
                 Debug = true,
-#endif
+//#endif
                 DepthStencilBufferFormat = null // Disable the depth-stencil buffer, the game is 2D only.
             })
             .Build(out GraphicsDevice);
@@ -88,7 +88,7 @@ public static class BirdleGame
 
         Input = new Input();
 
-        AudioDevice = new AudioDevice(48000, 32);
+        AudioDevice = new AudioDevice(48000, 4);
         
         Stopwatch deltaWatch = Stopwatch.StartNew();
         
@@ -185,6 +185,7 @@ public static class BirdleGame
         Settings.WindowSize = Window.Size;
         Settings.WindowFullscreen = Window.FullscreenMode != FullscreenMode.Windowed;
         Settings.WindowPosition = Window.Position;
+        Settings.UiScale = UI.Scale;
         Settings.Save(ConfigFile);
         
         UI.Font.Dispose();

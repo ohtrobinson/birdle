@@ -43,8 +43,8 @@ public struct ColorScheme
         TextColor = Color.White,
         
         GoodColor = Color.DarkGreen,
-        AlmostColor = Color.Goldenrod,
-        BadColor = Color.DimGray,
+        AlmostColor = Color.DarkGoldenrod,
+        BadColor = Color.FromArgb(70, 70, 70),
         
         EmptyColor = Color.FromArgb(32, 32, 32),
         

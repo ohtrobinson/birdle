@@ -14,9 +14,8 @@ public class FadeElement : UIElement
 
     public Color? Color;
     
-    public FadeElement(Position position, Size size, Color? color, float fadeTime, bool startFadedIn = false) : base(position)
+    public FadeElement(Color? color, float fadeTime, bool startFadedIn = false) : base(Position.TopLeft)
     {
-        Size = size;
         Color = color;
         State = FadeState.FadedOut;
         FadeTime = fadeTime;
@@ -79,7 +78,7 @@ public class FadeElement : UIElement
 
         int alpha = int.Clamp((int) ((_currentTime / FadeTime) * 255), 0, 255);
         Color color = System.Drawing.Color.FromArgb(alpha, Color ?? ColorScheme.BackgroundColor);
-        renderer.DrawRectangle(WorldPosition, Size, color, 0, Vector2.Zero);
+        renderer.DrawRectangle(Vector2.Zero, renderer.Device.Viewport.Size, color, 0, Vector2.Zero);
     }
 
     public enum FadeState

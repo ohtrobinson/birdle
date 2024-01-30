@@ -10,7 +10,7 @@ namespace birdle.GameModes;
 public class BootMode : GameMode
 {
     private Texture _texture;
-    //private Sound _sound;
+    private Sound _sound;
 
     private float _timer;
     private float _alpha;
@@ -29,7 +29,7 @@ public class BootMode : GameMode
         base.Initialize();
 
         _texture = BirdleGame.GraphicsDevice.CreateTexture("Content/aglogo.png");
-        //_sound = new Sound(BirdleGame.AudioDevice, "Content/Audio/intro.wav");
+        _sound = new Sound(BirdleGame.AudioDevice, "Content/Audio/intro.wav");
         
         _alpha = 0;
     }
@@ -47,7 +47,7 @@ public class BootMode : GameMode
             _alpha = 1.0f;
             if (!_hasPlayedSound)
             {
-                //_sound.Play();
+                _sound.Play();
                 _hasPlayedSound = true;
             }
         }
@@ -57,7 +57,7 @@ public class BootMode : GameMode
 
         if (_timer >= 2.0f)
         {
-            BirdleGame.ChangeGameMode(_firstTimeLaunch ? new FirstLaunchMode() : new BirdleMode(BirdleGame.Settings.Difficulty));
+            BirdleGame.ChangeGameMode(_firstTimeLaunch ? new SettingsMode(true) : new MenuMode());
         }
     }
 
@@ -72,7 +72,7 @@ public class BootMode : GameMode
         int alpha = int.Clamp((int) (_alpha * 255), 0, 255);
         Color color = Color.FromArgb(alpha, UI.ColorScheme.TextColor);
             
-        BirdleGame.SpriteRenderer.Draw(_texture, center, color, 0, new Vector2(0.5f), new Vector2(0.5f));
+        BirdleGame.SpriteRenderer.Draw(_texture, center, color, 0, new Vector2(0.5f * UI.Scale), new Vector2(0.5f));
     }
 
     public override void Dispose()
