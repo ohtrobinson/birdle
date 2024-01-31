@@ -37,7 +37,7 @@ public class FadeElement : UIElement
         State = FadeState.FadingOut;
     }
 
-    public override void Update(Input input, float dt, float scale, ref bool mouseCaptured)
+    public override void Update(float dt, float scale, ref bool mouseCaptured)
     {
         switch (State)
         {

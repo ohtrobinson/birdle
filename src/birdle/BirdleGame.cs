@@ -34,8 +34,6 @@ public static class BirdleGame
     public static Window Window;
     public static GraphicsDevice GraphicsDevice;
     public static SpriteRenderer SpriteRenderer;
-    
-    public static Input Input;
 
     public static AudioDevice AudioDevice;
 
@@ -85,8 +83,6 @@ public static class BirdleGame
         
         Font font = new Font(GraphicsDevice, "Content/Fonts/Questrial-Regular.ttf");
         UI.Initialize(font, settings.DarkMode ? ColorScheme.Dark : ColorScheme.Default, Settings.UiScale);
-
-        Input = new Input();
 
         AudioDevice = new AudioDevice(48000, 4);
         
@@ -174,7 +170,7 @@ public static class BirdleGame
             float delta = (float) deltad;
             
             _currentGameMode.Update(delta);
-            UI.Update(Input, GraphicsDevice.Viewport.Size, delta);
+            UI.Update(GraphicsDevice.Viewport.Size, delta);
             
             _currentGameMode.Draw(delta);
             UI.Draw(SpriteRenderer);

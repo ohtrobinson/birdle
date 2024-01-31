@@ -29,9 +29,9 @@ public abstract class UIElement
         Visible = true;
     }
 
-    public virtual void Update(Input input, float dt, float scale, ref bool mouseCaptured)
+    public virtual void Update(float dt, float scale, ref bool mouseCaptured)
     {
-        Vector2 mPos = input.MousePosition;
+        Vector2 mPos = Input.MousePosition;
         
         IsClicked = false;
 
@@ -45,7 +45,7 @@ public abstract class UIElement
             mouseCaptured = true;
             IsHovered = true;
 
-            if (input.MouseButtonDown(MouseButton.Left))
+            if (Input.MouseButtonDown(MouseButton.Left))
                 IsMouseButtonHeld = true;
             else if (IsMouseButtonHeld)
             {

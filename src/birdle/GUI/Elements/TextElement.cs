@@ -28,7 +28,10 @@ public class TextElement : UIElement
         Text = text;
     }
 
-    public override void Update(Input input, float dt, float scale, ref bool mouseCaptured) { }
+    public override void Update(float dt, float scale, ref bool mouseCaptured)
+    {
+        // Text elements are "mouse transparent", therefore we can't call the base method.
+    }
 
     public override void Draw(SpriteRenderer renderer, float scale)
     {
