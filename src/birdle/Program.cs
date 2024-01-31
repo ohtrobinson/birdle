@@ -27,7 +27,7 @@ try
 }
 catch (Exception e)
 {
-    BirdleGame.Log(LogType.Critical, e.ToString());
-    MessageBox.Show(MessageBox.MessageBoxType.Error, "Oops!", "The game crashed. Please report this to the developer:\n" + e);
+    BirdleGame.Log(LogType.Error, e.ToString());
+    MessageBox.Show(MessageBox.MessageBoxType.Error, "Oops!", "The game crashed. Please open a GitHub issue and report this to the developer:\n" + e);
 }
 #endif
