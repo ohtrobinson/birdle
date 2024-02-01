@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
+using System.Reflection;
 using birdle.Data;
 using birdle.GameModes;
 using birdle.Graphics;
@@ -20,6 +21,17 @@ public static class BirdleGame
     public const string GameTitle = "birdle";
     public const string ConfigFile = "Config.cfg";
     public const string LogDir = "Logs";
+
+    public static string Version
+    {
+        get
+        {
+            string version = Assembly.GetEntryAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                ?.InformationalVersion;
+
+            return version[..(version.IndexOf('+'))];
+        }
+    }
 
     private static StreamWriter _logFile;
     
@@ -51,7 +63,7 @@ public static class BirdleGame
         _currentGameMode = initialMode;
 
         Directory.CreateDirectory(LogDir);
-        _logFile = new StreamWriter(Path.Combine(LogDir, DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss") + ".log"))
+        _logFile = new StreamWriter(Path.Combine(LogDir, DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".log"))
         {
             AutoFlush = true
         };

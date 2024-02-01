@@ -105,6 +105,8 @@ public class SettingsMode : GameMode
 
         _doneButton = new Button(position, buttonSize, "Done", 20, () =>
         {
+            BirdleGame.Settings.UiScale = UI.Scale;
+            BirdleGame.Settings.Save(BirdleGame.ConfigFile);
             _done = true;
         });
         UI.AddElement(_doneButton);

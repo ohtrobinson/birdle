@@ -43,6 +43,9 @@ public class MenuMode : GameMode
         position.Offset.Y += buttonSize.Height + spacing;
         Button quitButton = new Button(position, buttonSize, "Quit", fontSize, () => BirdleGame.Close());
         UI.AddElement(quitButton);
+        
+        TextElement version = new TextElement(new Position(Anchor.BottomLeft, new Vector2(5, -5)), BirdleGame.Version, 20);
+        UI.AddElement(version);
 
         _fade = new FadeElement(null, 0.5f, true);
         _fade.FadeOut();

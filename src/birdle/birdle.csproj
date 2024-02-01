@@ -7,6 +7,9 @@
         <Nullable>disable</Nullable>
         <PublishAot>true</PublishAot>
         <ApplicationIcon>icon.ico</ApplicationIcon>
+        <!-- This versioning scheme follows the piegfx recommended versioning scheme.
+             For builds released using the workflows, this version scheme will be replaced with something better. -->
+        <Version>$([System.DateTime]::UtcNow.ToString(yyyy.M.d.HHmm))-dev.$([System.Environment]::MachineName)</Version>
     </PropertyGroup>
 
     <ItemGroup>
