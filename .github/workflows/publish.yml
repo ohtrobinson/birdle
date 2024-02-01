@@ -18,7 +18,7 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Publish
-      run: dotnet publish -o publish
+      run: dotnet publish -o publish -c Release -p:Version=${{ github.run_number }}-${{ github.job }}
     - uses: actions/upload-artifact@v3
       with:
         name: birdle-${{ matrix.os }}
