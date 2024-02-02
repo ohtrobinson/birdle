@@ -16,7 +16,11 @@ public static class UI
     public static int Scale
     {
         get => (int) (MathF.Round(_scale * 100, 3));
-        set => _scale = value / 100f;
+        set
+        {
+            _scale = value / 100f;
+            Font.DisposeTextureCache();
+        }
     }
 
     public static Font Font;
@@ -35,7 +39,7 @@ public static class UI
 
     public static void Initialize(Font font, ColorScheme colorScheme, int scale)
     {
-        Scale = scale;
+        _scale = scale / 100f;
         Font = font;
         _colorScheme = colorScheme;
 

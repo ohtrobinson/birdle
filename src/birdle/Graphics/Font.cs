@@ -86,6 +86,23 @@ public class Font : IDisposable
         return finalSize;
     }
 
+    public void DisposeTextureCache()
+    {
+        BirdleGame.Log(LogType.Debug, "Disposing texture cache...");
+        
+        foreach ((_, Dictionary<char, Character> charSet) in _cachedCharacters)
+        {
+            foreach ((_, Character character) in charSet)
+                character.Texture?.Dispose();
+            
+            charSet.Clear();
+        }
+        
+        _cachedCharacters.Clear();
+        
+        BirdleGame.Log(LogType.Debug, "Texture cache disposed.");
+    }
+
     private void GetCharSet(uint size, string text, out Dictionary<char, Character> characters, out int largestChar)
     {
         largestChar = 0;
