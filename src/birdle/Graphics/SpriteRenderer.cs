@@ -36,6 +36,7 @@ public class SpriteRenderer : IDisposable
     private BlendState _blendState;
     private SamplerState _samplerState;
 
+    private bool _isBegun;
     private Texture _currentTexture;
     private uint _currentSprite;
 
@@ -78,6 +79,11 @@ public class SpriteRenderer : IDisposable
 
     public void Begin()
     {
+        if (_isBegun)
+            throw new Exception("Cannot begin, has already begun.");
+
+        _isBegun = true;
+        
         Rectangle viewport = _device.Viewport;
         Matrix4x4 projection = Matrix4x4.CreateOrthographicOffCenter(viewport.X, viewport.X + viewport.Width,
             viewport.Y + viewport.Height, viewport.Y, -1, 1);
@@ -87,11 +93,19 @@ public class SpriteRenderer : IDisposable
 
     public void End()
     {
+        if (!_isBegun)
+            throw new Exception("Cannot end, has already ended.");
+
+        _isBegun = false;
+        
         Flush();
     }
 
     public void Draw(Texture texture, Vector2 position, Color tint, float rotation, Vector2 scale, Vector2 origin)
     {
+        if (!_isBegun)
+            throw new Exception("Cannot draw, has not begun.");
+        
         if (texture != _currentTexture || _currentSprite >= MaxSprites)
             Flush();
 
@@ -114,12 +128,12 @@ public class SpriteRenderer : IDisposable
         _vertices[vOffset + 2] = new VertexPositionColorTexture(Vector3.Transform(new Vector3(1, 1, 0), world), nTint, new Vector2(1, 1));
         _vertices[vOffset + 3] = new VertexPositionColorTexture(Vector3.Transform(new Vector3(0, 1, 0), world), nTint, new Vector2(0, 1));
 
-        _indices[iOffset + 0] = 0;
-        _indices[iOffset + 1] = 1;
-        _indices[iOffset + 2] = 3;
-        _indices[iOffset + 3] = 1;
-        _indices[iOffset + 4] = 2;
-        _indices[iOffset + 5] = 3;
+        _indices[iOffset + 0] = (ushort) (0 + vOffset);
+        _indices[iOffset + 1] = (ushort) (1 + vOffset);
+        _indices[iOffset + 2] = (ushort) (3 + vOffset);
+        _indices[iOffset + 3] = (ushort) (1 + vOffset);
+        _indices[iOffset + 4] = (ushort) (2 + vOffset);
+        _indices[iOffset + 5] = (ushort) (3 + vOffset);
 
         _currentSprite++;
     }
