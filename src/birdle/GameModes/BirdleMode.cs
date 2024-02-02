@@ -256,6 +256,10 @@ public class BirdleMode : GameMode
         if (numCorrect == _word.Length)
         {
             _totalTime.Stop();
+            
+            foreach ((_, Button button) in _keyboard)
+                button.Visible = false;
+            
             _temp.Visible = true;
         }
         else
@@ -265,6 +269,10 @@ public class BirdleMode : GameMode
             if (_currentRow >= _grid.Rows)
             {
                 _totalTime.Stop();
+
+                foreach ((_, Button button) in _keyboard)
+                    button.Visible = false;
+                
                 _temp.FontSize = 30;
                 _temp.Text = $"\nThe word was \"{_word.ToLower()}\".\nPress space to restart.";
 
