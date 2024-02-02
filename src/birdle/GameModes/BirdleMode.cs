@@ -22,6 +22,8 @@ public class BirdleMode : GameMode
     private FadeElement _fade;
     private GameMode _setGameMode;
 
+    private Dictionary<char, Button> _keyboard;
+
     private Difficulty _difficulty;
 
     private int _currentColumn;
@@ -38,6 +40,7 @@ public class BirdleMode : GameMode
     public BirdleMode(Difficulty difficulty)
     {
         _difficulty = difficulty;
+        _keyboard = new Dictionary<char, Button>();
     }
 
     public override void Initialize()
@@ -78,6 +81,33 @@ public class BirdleMode : GameMode
 
         _word = _knownWords[Random.Shared.Next(_knownWords.Count)].ToUpper();
 
+        const string keyboardKeys = "qwertyuiop\nasdfghjkl\nzxcvbnm";
+        Size keySize = new Size(30, 30);
+        const uint keyFontSize = 20;
+        const int keySpacing = 10;
+
+        Vector2 position = new Vector2(0, -150);
+
+        foreach (string row in keyboardKeys.Split('\n'))
+        {
+            int numKeys = row.Length;
+
+            position.X = -(numKeys * (keySize.Width + keySpacing)) / 2;
+            
+            foreach (char k in row)
+            {
+                Button button = new Button(new Position(Anchor.BottomCenter, position), keySize, k.ToString(),
+                    keyFontSize, () => BirdleGameOnTextInput(k));
+                UI.AddElement(button);
+                
+                _keyboard.Add(char.ToUpper(k), button);
+
+                position.X += keySize.Width + keySpacing;
+            }
+
+            position.Y += keySize.Height + keySpacing;
+        }
+        
         _fade = new FadeElement(null, 0.5f, true);
         UI.AddElement(_fade);
         
@@ -170,6 +200,7 @@ public class BirdleMode : GameMode
             if (_word[i] == slot.Character)
             {
                 slot.State = BirdleGrid.SlotState.Good;
+                _keyboard[slot.Character].ColorScheme.EmptyColor = UI.ColorScheme.GoodColor;
                 numCorrect++;
             }
             else if (_word.Contains(slot.Character))
@@ -203,14 +234,23 @@ public class BirdleMode : GameMode
                 }
 
                 if (numOccurrencesInGuess == numOccurrencesInWord)
+                {
                     slot.State = BirdleGrid.SlotState.Bad;
+                    _keyboard[slot.Character].ColorScheme.EmptyColor = UI.ColorScheme.BadColor;
+                }
                 else
+                {
                     slot.State = BirdleGrid.SlotState.Almost;
-                
+                    _keyboard[slot.Character].ColorScheme.EmptyColor = UI.ColorScheme.AlmostColor;
+                }
+
                 BirdleGame.Log(LogType.Debug, $"word: {numOccurrencesInWord} guess: {numOccurrencesInGuess}");
             }
             else
+            {
                 slot.State = BirdleGrid.SlotState.Bad;
+                _keyboard[slot.Character].ColorScheme.EmptyColor = UI.ColorScheme.BadColor;
+            }
         }
 
         if (numCorrect == _word.Length)

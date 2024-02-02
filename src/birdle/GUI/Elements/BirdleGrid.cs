@@ -32,11 +32,6 @@ public class BirdleGrid : UIElement
         Slots = new Slot[columns, rows];
 
         Font = UI.Font;
-    }
-
-    public override void Update(float dt, float scale, ref bool mouseCaptured)
-    {
-        base.Update(dt, scale, ref mouseCaptured);
         
         Size = new Size(Columns * (RectangleSize + Spacing), Rows * (RectangleSize + Spacing));
     }
