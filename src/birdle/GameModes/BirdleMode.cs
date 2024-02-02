@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
+using birdle.Generators;
 using birdle.GUI;
 using birdle.GUI.Elements;
 using Pie;
@@ -13,7 +14,11 @@ namespace birdle.GameModes;
 
 public class BirdleMode : GameMode
 {
-    private BirdleGrid _grid;
+    private IGenerator _generator;
+    private string _word;
+    private char[,] _grid;
+    
+    private BirdleGrid _gridElement;
     private TextElement _temp;
 
     private Stopwatch _totalTime;
@@ -29,13 +34,9 @@ public class BirdleMode : GameMode
     private int _currentColumn;
     private int _currentRow;
 
-    private string _word;
-
     private float _timer;
     private bool _missingLetters;
     private bool _invalidWord;
-
-    private List<string> _knownWords;
 
     public BirdleMode(Difficulty difficulty)
     {
@@ -46,6 +47,22 @@ public class BirdleMode : GameMode
     public override void Initialize()
     {
         base.Initialize();
+        
+        List<string> words = new List<string>();
+
+        using StreamReader reader = File.OpenText("Content/Words/words5.wb");
+        string word;
+        while ((word = reader.ReadLine()) != null)
+        {
+            if (string.IsNullOrEmpty(word) || word.StartsWith('#'))
+                continue;
+            words.Add(word);
+        }
+
+        _generator = new WordGenerator(words.ToArray());
+        _word = _generator.Generate();
+
+        const int numColumns = 5;
 
         int numRows = _difficulty switch
         {
@@ -56,8 +73,10 @@ public class BirdleMode : GameMode
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        _grid = new BirdleGrid(new Position(Anchor.TopCenter, new Vector2(0, 20)), numRows, 5, 50, 5, 40);
-        UI.AddElement(_grid);
+        _grid = new char[numColumns, numRows];
+
+        _gridElement = new BirdleGrid(new Position(Anchor.TopCenter, new Vector2(0, 20)), numRows, numColumns, 50, 5, 40);
+        UI.AddElement(_gridElement);
 
         _temp = new TextElement(new Position(Anchor.BottomCenter, new Vector2(0, -100)), "Well done!\nPress space to restart.", 30)
         {
@@ -68,19 +87,6 @@ public class BirdleMode : GameMode
         _time = new TextElement(new Position(Anchor.TopRight, new Vector2(-5, 5)), "00:00", 20);
         UI.AddElement(_time);
 
-        _knownWords = new List<string>();
-
-        using StreamReader reader = File.OpenText("Content/Words/words5.wb");
-        string word;
-        while ((word = reader.ReadLine()) != null)
-        {
-            if (string.IsNullOrEmpty(word) || word.StartsWith('#'))
-                continue;
-            _knownWords.Add(word);
-        }
-
-        _word = _knownWords[Random.Shared.Next(_knownWords.Count)].ToUpper();
-
         const string keyboardKeys = "qwertyuiop\nasdfghjkl\nzxcvbnm";
         Size keySize = new Size(30, 30);
         const uint keyFontSize = 20;
@@ -88,7 +94,7 @@ public class BirdleMode : GameMode
 
         Vector2 position = new Vector2(0, -150);
 
-        foreach (string row in keyboardKeys.ToUpper().Split('\n'))
+        foreach (string row in keyboardKeys.Split('\n'))
         {
             int numKeys = row.Length;
             Console.WriteLine(numKeys);
@@ -97,8 +103,8 @@ public class BirdleMode : GameMode
             
             foreach (char k in row)
             {
-                Button button = new Button(new Position(Anchor.BottomCenter, position), keySize, k.ToString(),
-                    keyFontSize, () => BirdleGameOnTextInput(k));
+                Button button = new Button(new Position(Anchor.BottomCenter, position), keySize,
+                    char.ToString(char.ToUpper(k)), keyFontSize, () => BirdleGameOnTextInput(k));
                 UI.AddElement(button);
                 
                 _keyboard.Add(k, button);
@@ -133,7 +139,7 @@ public class BirdleMode : GameMode
                     break;
 
                 _currentColumn--;
-                _grid.Slots[_currentColumn, _currentRow].Character = char.MinValue;
+                SetCharacter(_currentColumn, _currentRow, char.MinValue);
                 
                 break;
             
@@ -155,21 +161,25 @@ public class BirdleMode : GameMode
         if (!char.IsLetter(c))
             return;
         
-        if (_currentColumn >= _grid.Columns)
+        if (_currentColumn >= _gridElement.Columns)
             return;
-
-        c = char.ToUpper(c);
         
-        BirdleGame.Log(LogType.Debug, $"_grid.Slots[{_currentColumn}, {_currentRow}].Character = '{c}'");
-
-        _grid.Slots[_currentColumn, _currentRow].Character = c;
+        BirdleGame.Log(LogType.Debug, $"SetCharacter({_currentColumn}, {_currentRow}, '{c}')");
+        
+        SetCharacter(_currentColumn, _currentRow, c);
 
         _currentColumn++;
     }
 
+    private void SetCharacter(int column, int row, char c)
+    {
+        _grid[column, row] = c;
+        _gridElement.Slots[column, row].Character = char.ToUpper(c);
+    }
+
     private void CheckWord()
     {
-        if (_currentColumn < _grid.Columns)
+        if (_currentColumn < _gridElement.Columns)
         {
             _missingLetters = true;
             return;
@@ -180,10 +190,10 @@ public class BirdleMode : GameMode
             string word = "";
             // YUCK!!!!
             // TODO: Replace this utter crap. You need a better system of storing the currently active word.
-            for (int i = 0; i < _grid.Columns; i++)
-                word += _grid.Slots[i, _currentRow].Character;
+            for (int i = 0; i < _gridElement.Columns; i++)
+                word += _grid[i, _currentRow];
 
-            if (!_knownWords.Contains(word.ToLower()))
+            if (!_generator.CheckIfValid(word))
             {
                 _invalidWord = true;
                 return;
@@ -192,19 +202,20 @@ public class BirdleMode : GameMode
         
         int numCorrect = 0;
         
-        for (int i = 0; i < _grid.Columns; i++)
+        for (int i = 0; i < _gridElement.Columns; i++)
         {
             BirdleGame.Log(LogType.Debug, $"Process column {i}");
             
-            ref BirdleGrid.Slot slot = ref _grid.Slots[i, _currentRow];
+            ref BirdleGrid.Slot slot = ref _gridElement.Slots[i, _currentRow];
+            char character = _grid[i, _currentRow];
 
-            if (_word[i] == slot.Character)
+            if (_word[i] == character)
             {
                 slot.State = BirdleGrid.SlotState.Good;
-                _keyboard[slot.Character].ColorScheme.EmptyColor = UI.ColorScheme.GoodColor;
+                _keyboard[character].ColorScheme.EmptyColor = UI.ColorScheme.GoodColor;
                 numCorrect++;
             }
-            else if (_word.Contains(slot.Character))
+            else if (_word.Contains(character))
             {
                 // This algorithm works out if a character should be displayed as "almost", or "bad".
                 // Say a word has 2 occurrences of the letter 'a', and the user's guess has 3 occurrences of 'a', one
@@ -222,28 +233,27 @@ public class BirdleMode : GameMode
                 int numOccurrencesInWord = 0;
                 foreach (char c in _word)
                 {
-                    if (c == slot.Character)
+                    if (c == character)
                         numOccurrencesInWord++;
                 }
 
                 int numOccurrencesInGuess = 0;
-                for (int j = 0; j < _grid.Columns; j++)
+                for (int j = 0; j < _gridElement.Columns; j++)
                 {
-                    if (_grid.Slots[j, _currentRow].Character == slot.Character &&
-                        _grid.Slots[j, _currentRow].Character == _word[j])
+                    if (_grid[j, _currentRow] == character && _grid[j, _currentRow] == _word[j])
                         numOccurrencesInGuess++;
                 }
 
                 if (numOccurrencesInGuess == numOccurrencesInWord)
                 {
                     slot.State = BirdleGrid.SlotState.Bad;
-                    _keyboard[slot.Character].ColorScheme.EmptyColor = UI.ColorScheme.BadColor;
+                    _keyboard[character].ColorScheme.EmptyColor = UI.ColorScheme.BadColor;
                 }
                 else
                 {
                     slot.State = BirdleGrid.SlotState.Almost;
-                    if (_keyboard[slot.Character].ColorScheme.EmptyColor != UI.ColorScheme.GoodColor)
-                        _keyboard[slot.Character].ColorScheme.EmptyColor = UI.ColorScheme.AlmostColor;
+                    if (_keyboard[character].ColorScheme.EmptyColor != UI.ColorScheme.GoodColor)
+                        _keyboard[character].ColorScheme.EmptyColor = UI.ColorScheme.AlmostColor;
                 }
 
                 BirdleGame.Log(LogType.Debug, $"word: {numOccurrencesInWord} guess: {numOccurrencesInGuess}");
@@ -251,7 +261,7 @@ public class BirdleMode : GameMode
             else
             {
                 slot.State = BirdleGrid.SlotState.Bad;
-                _keyboard[slot.Character].ColorScheme.EmptyColor = UI.ColorScheme.BadColor;
+                _keyboard[character].ColorScheme.EmptyColor = UI.ColorScheme.BadColor;
             }
         }
 
@@ -268,7 +278,7 @@ public class BirdleMode : GameMode
         {
             _currentRow++;
 
-            if (_currentRow >= _grid.Rows)
+            if (_currentRow >= _gridElement.Rows)
             {
                 _totalTime.Stop();
 
@@ -299,15 +309,15 @@ public class BirdleMode : GameMode
         {
             _timer += dt;
 
-            for (int i = _currentColumn; i < _grid.Columns; i++)
-                _grid.Slots[i, _currentRow].State = BirdleGrid.SlotState.Oops;
+            for (int i = _currentColumn; i < _gridElement.Columns; i++)
+                _gridElement.Slots[i, _currentRow].State = BirdleGrid.SlotState.Oops;
         }
         else if (_invalidWord)
         {
             _timer += dt;
 
-            for (int i = 0; i < _grid.Columns; i++)
-                _grid.Slots[i, _currentRow].State = BirdleGrid.SlotState.Oops;
+            for (int i = 0; i < _gridElement.Columns; i++)
+                _gridElement.Slots[i, _currentRow].State = BirdleGrid.SlotState.Oops;
         }
         
         if (_timer >= 1.0f)
@@ -316,8 +326,8 @@ public class BirdleMode : GameMode
             _invalidWord = false;
             _timer = 0;
                 
-            for (int i = 0; i < _grid.Columns; i++)
-                _grid.Slots[i, _currentRow].State = BirdleGrid.SlotState.None;
+            for (int i = 0; i < _gridElement.Columns; i++)
+                _gridElement.Slots[i, _currentRow].State = BirdleGrid.SlotState.None;
         }
         
         if (_fade.State == FadeElement.FadeState.FadedIn)
