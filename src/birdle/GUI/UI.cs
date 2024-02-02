@@ -64,6 +64,8 @@ public static class UI
 
     public static void Draw(SpriteRenderer renderer)
     {
+        renderer.Begin();
+        
         foreach (UIElement element in _elements)
         {
             if (!element.Visible)
@@ -71,6 +73,8 @@ public static class UI
             
             element.Draw(renderer, Scale);
         }
+        
+        renderer.End();
     }
 
     public static Vector2 CalculateWorldPos(Size screenSize, Position position, Size elementSize)

@@ -76,15 +76,28 @@ public class SpriteRenderer : IDisposable
         White = device.CreateTexture(new Size(1, 1), new byte[] { 255, 255, 255, 255 });
     }
 
-    public void Draw(Texture texture, Vector2 position, Color tint, float rotation, Vector2 scale, Vector2 origin)
+    public void Begin()
     {
-        TextureDescription description = texture.Description;
-        
         Rectangle viewport = _device.Viewport;
         Matrix4x4 projection = Matrix4x4.CreateOrthographicOffCenter(viewport.X, viewport.X + viewport.Width,
             viewport.Y + viewport.Height, viewport.Y, -1, 1);
         
         _device.UpdateBuffer(_cameraBuffer, 0, projection);
+    }
+
+    public void End()
+    {
+        Flush();
+    }
+
+    public void Draw(Texture texture, Vector2 position, Color tint, float rotation, Vector2 scale, Vector2 origin)
+    {
+        if (texture != _currentTexture || _currentSprite >= MaxSprites)
+            Flush();
+
+        _currentTexture = texture;
+        
+        TextureDescription description = texture.Description;
 
         Matrix4x4 world = Matrix4x4.CreateTranslation(-origin.X, -origin.Y, 0) *
                           Matrix4x4.CreateScale(description.Width * scale.X, description.Height * scale.Y, 1) *
@@ -97,9 +110,9 @@ public class SpriteRenderer : IDisposable
         Vector4 nTint = tint.Normalize();
         
         _vertices[vOffset + 0] = new VertexPositionColorTexture(Vector3.Transform(new Vector3(0, 0, 0), world), nTint, new Vector2(0, 0));
-        _vertices[vOffset + 0] = new VertexPositionColorTexture(Vector3.Transform(new Vector3(1, 0, 0), world), nTint, new Vector2(1, 0));
-        _vertices[vOffset + 0] = new VertexPositionColorTexture(Vector3.Transform(new Vector3(1, 1, 0), world), nTint, new Vector2(1, 1));
-        _vertices[vOffset + 0] = new VertexPositionColorTexture(Vector3.Transform(new Vector3(0, 1, 0), world), nTint, new Vector2(0, 1));
+        _vertices[vOffset + 1] = new VertexPositionColorTexture(Vector3.Transform(new Vector3(1, 0, 0), world), nTint, new Vector2(1, 0));
+        _vertices[vOffset + 2] = new VertexPositionColorTexture(Vector3.Transform(new Vector3(1, 1, 0), world), nTint, new Vector2(1, 1));
+        _vertices[vOffset + 3] = new VertexPositionColorTexture(Vector3.Transform(new Vector3(0, 1, 0), world), nTint, new Vector2(0, 1));
 
         _indices[iOffset + 0] = 0;
         _indices[iOffset + 1] = 1;
@@ -107,21 +120,8 @@ public class SpriteRenderer : IDisposable
         _indices[iOffset + 3] = 1;
         _indices[iOffset + 4] = 2;
         _indices[iOffset + 5] = 3;
-        
-        _device.SetPrimitiveType(PrimitiveType.TriangleList);
-        _device.SetRasterizerState(_rasterizerState);
-        _device.SetBlendState(_blendState);
-        
-        _device.SetUniformBuffer(0, _cameraBuffer);
-        _device.SetTexture(1, texture, _samplerState);
-        
-        _device.SetShader(_shader);
-        _device.SetInputLayout(_inputLayout);
-        _device.SetVertexBuffer(0, _vertexBuffer, VertexPositionColorTexture.SizeInBytes);
-        _device.SetIndexBuffer(_indexBuffer, IndexType.UShort);
-        
-        // 6 == indices.Length
-        _device.DrawIndexed(6 * _currentSprite);
+
+        _currentSprite++;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -139,6 +139,36 @@ public class SpriteRenderer : IDisposable
         DrawRectangle(position + new Vector2(size.Width - borderWidth, 0), new Size(borderWidth, size.Height), color, 0, Vector2.Zero);
         DrawRectangle(position + new Vector2(0, size.Height - borderWidth), new Size(size.Width, borderWidth), color, 0, Vector2.Zero);
     }
+
+    private void Flush()
+    {
+        if (_currentSprite == 0)
+            return;
+
+        MappedSubresource vRes = _device.MapResource(_vertexBuffer, MapMode.Write);
+        PieUtils.CopyToUnmanaged(vRes.DataPtr, 0, _currentSprite * NumVertices * VertexPositionColorTexture.SizeInBytes, _vertices);
+        _device.UnmapResource(_vertexBuffer);
+
+        MappedSubresource iRes = _device.MapResource(_indexBuffer, MapMode.Write);
+        PieUtils.CopyToUnmanaged(iRes.DataPtr, 0, _currentSprite * NumIndices * sizeof(ushort), _indices);
+        _device.UnmapResource(_indexBuffer);
+        
+        _device.SetPrimitiveType(PrimitiveType.TriangleList);
+        _device.SetRasterizerState(_rasterizerState);
+        _device.SetBlendState(_blendState);
+        
+        _device.SetUniformBuffer(0, _cameraBuffer);
+        _device.SetTexture(1, _currentTexture, _samplerState);
+        
+        _device.SetShader(_shader);
+        _device.SetInputLayout(_inputLayout);
+        _device.SetVertexBuffer(0, _vertexBuffer, VertexPositionColorTexture.SizeInBytes);
+        _device.SetIndexBuffer(_indexBuffer, IndexType.UShort);
+        
+        _device.DrawIndexed(NumIndices * _currentSprite);
+
+        _currentSprite = 0;
+    }
     
     public void Dispose()
     {
@@ -151,7 +181,6 @@ public class SpriteRenderer : IDisposable
         _inputLayout.Dispose();
         _shader.Dispose();
         
-        _drawInfoBuffer.Dispose();
         _cameraBuffer.Dispose();
         
         _indexBuffer.Dispose();

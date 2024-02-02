@@ -40,7 +40,7 @@ PSOutput Pixel(const in VSOutput input)
 {
     PSOutput output;
 
-    output.color = sprite.Sample(state, input.texCoord) * input.color;
+    output.color = sprite.Sample(state, input.texCoord) * input.tint;
     
     return output;
 }
