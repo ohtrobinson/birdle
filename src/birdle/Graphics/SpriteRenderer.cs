@@ -11,13 +11,23 @@ namespace birdle.Graphics;
 
 public class SpriteRenderer : IDisposable
 {
+    public const uint MaxSprites = 1024;
+
+    private const uint NumVertices = 4;
+    private const uint NumIndices = 6;
+
+    private const uint MaxVertices = NumVertices * MaxSprites;
+    private const uint MaxIndices = NumIndices * MaxSprites;
+    
     private GraphicsDevice _device;
+
+    private VertexPositionColorTexture[] _vertices;
+    private ushort[] _indices;
 
     private GraphicsBuffer _vertexBuffer;
     private GraphicsBuffer _indexBuffer;
 
     private GraphicsBuffer _cameraBuffer;
-    private GraphicsBuffer _drawInfoBuffer;
 
     private Shader _shader;
     private InputLayout _inputLayout;
@@ -25,6 +35,9 @@ public class SpriteRenderer : IDisposable
     private RasterizerState _rasterizerState;
     private BlendState _blendState;
     private SamplerState _samplerState;
+
+    private Texture _currentTexture;
+    private uint _currentSprite;
 
     public readonly Texture White;
 
@@ -34,25 +47,13 @@ public class SpriteRenderer : IDisposable
     {
         _device = device;
 
-        VertexPositionTexture[] vertices = new[]
-        {
-            new VertexPositionTexture(new Vector3(0.0f, 0.0f, 0.0f), new Vector2(0, 0)),
-            new VertexPositionTexture(new Vector3(1.0f, 0.0f, 0.0f), new Vector2(1, 0)),
-            new VertexPositionTexture(new Vector3(1.0f, 1.0f, 0.0f), new Vector2(1, 1)),
-            new VertexPositionTexture(new Vector3(0.0f, 1.0f, 0.0f), new Vector2(0, 1))
-        };
+        _vertices = new VertexPositionColorTexture[MaxVertices];
+        _indices = new ushort[MaxIndices];
 
-        ushort[] indices = new ushort[]
-        {
-            0, 1, 3,
-            1, 2, 3
-        };
-
-        _vertexBuffer = device.CreateBuffer(BufferType.VertexBuffer, vertices);
-        _indexBuffer = device.CreateBuffer(BufferType.IndexBuffer, indices);
+        _vertexBuffer = device.CreateBuffer(BufferType.VertexBuffer, MaxVertices * VertexPositionColorTexture.SizeInBytes, true);
+        _indexBuffer = device.CreateBuffer(BufferType.IndexBuffer, MaxIndices * sizeof(uint), true);
 
         _cameraBuffer = device.CreateBuffer(BufferType.UniformBuffer, (uint) Unsafe.SizeOf<Matrix4x4>(), true);
-        _drawInfoBuffer = device.CreateBuffer(BufferType.UniformBuffer, (uint) Unsafe.SizeOf<DrawInfo>(), true);
 
         string shaderText = File.ReadAllText("Content/Shaders/Sprite.hlsl");
         _shader = device.CreateShader(new[]
@@ -64,7 +65,8 @@ public class SpriteRenderer : IDisposable
         _inputLayout = device.CreateInputLayout(new[]
         {
             new InputLayoutDescription(Format.R32G32B32_Float, 0, 0, InputType.PerVertex), // position
-            new InputLayoutDescription(Format.R32G32_Float, 12, 0, InputType.PerVertex) // texCoord
+            new InputLayoutDescription(Format.R32G32B32A32_Float, 12, 0, InputType.PerVertex), // tint
+            new InputLayoutDescription(Format.R32G32_Float, 28, 0, InputType.PerVertex) // texCoord
         });
 
         _rasterizerState = device.CreateRasterizerState(RasterizerStateDescription.CullNone);
@@ -81,36 +83,45 @@ public class SpriteRenderer : IDisposable
         Rectangle viewport = _device.Viewport;
         Matrix4x4 projection = Matrix4x4.CreateOrthographicOffCenter(viewport.X, viewport.X + viewport.Width,
             viewport.Y + viewport.Height, viewport.Y, -1, 1);
+        
+        _device.UpdateBuffer(_cameraBuffer, 0, projection);
 
         Matrix4x4 world = Matrix4x4.CreateTranslation(-origin.X, -origin.Y, 0) *
                           Matrix4x4.CreateScale(description.Width * scale.X, description.Height * scale.Y, 1) *
                           Matrix4x4.CreateRotationZ(rotation) *
                           Matrix4x4.CreateTranslation(position.X, position.Y, 0);
 
-        DrawInfo info = new DrawInfo()
-        {
-            World = world,
-            Tint = tint.Normalize()
-        };
+        uint vOffset = _currentSprite * NumVertices;
+        uint iOffset = _currentSprite * NumIndices;
+
+        Vector4 nTint = tint.Normalize();
         
-        _device.UpdateBuffer(_cameraBuffer, 0, projection);
-        _device.UpdateBuffer(_drawInfoBuffer, 0, info);
+        _vertices[vOffset + 0] = new VertexPositionColorTexture(Vector3.Transform(new Vector3(0, 0, 0), world), nTint, new Vector2(0, 0));
+        _vertices[vOffset + 0] = new VertexPositionColorTexture(Vector3.Transform(new Vector3(1, 0, 0), world), nTint, new Vector2(1, 0));
+        _vertices[vOffset + 0] = new VertexPositionColorTexture(Vector3.Transform(new Vector3(1, 1, 0), world), nTint, new Vector2(1, 1));
+        _vertices[vOffset + 0] = new VertexPositionColorTexture(Vector3.Transform(new Vector3(0, 1, 0), world), nTint, new Vector2(0, 1));
+
+        _indices[iOffset + 0] = 0;
+        _indices[iOffset + 1] = 1;
+        _indices[iOffset + 2] = 3;
+        _indices[iOffset + 3] = 1;
+        _indices[iOffset + 4] = 2;
+        _indices[iOffset + 5] = 3;
         
         _device.SetPrimitiveType(PrimitiveType.TriangleList);
         _device.SetRasterizerState(_rasterizerState);
         _device.SetBlendState(_blendState);
         
         _device.SetUniformBuffer(0, _cameraBuffer);
-        _device.SetUniformBuffer(1, _drawInfoBuffer);
-        _device.SetTexture(2, texture, _samplerState);
+        _device.SetTexture(1, texture, _samplerState);
         
         _device.SetShader(_shader);
         _device.SetInputLayout(_inputLayout);
-        _device.SetVertexBuffer(0, _vertexBuffer, VertexPositionTexture.SizeInBytes);
+        _device.SetVertexBuffer(0, _vertexBuffer, VertexPositionColorTexture.SizeInBytes);
         _device.SetIndexBuffer(_indexBuffer, IndexType.UShort);
         
         // 6 == indices.Length
-        _device.DrawIndexed(6);
+        _device.DrawIndexed(6 * _currentSprite);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -145,11 +156,5 @@ public class SpriteRenderer : IDisposable
         
         _indexBuffer.Dispose();
         _vertexBuffer.Dispose();
-    }
-
-    private struct DrawInfo
-    {
-        public Matrix4x4 World;
-        public Vector4 Tint;
     }
 }
