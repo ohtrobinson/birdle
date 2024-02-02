@@ -18,7 +18,7 @@ public struct GameSettings
     
     public Difficulty Difficulty;
 
-    public float UiScale;
+    public int UiScale;
 
     public void Save(string path)
     {
@@ -55,18 +55,18 @@ public struct GameSettings
         settings.WindowPosition.Y = (int) (double) ((object[]) config["window.position"])[1];
         settings.DarkMode = (bool) config["darkmode"];
         settings.Difficulty = Enum.Parse<Difficulty>((string) config["difficulty"], true);
-        settings.UiScale = (float) (double) config["ui.scale"];
+        settings.UiScale = (int) (double) config["ui.scale"];
 
         return true;
     }
 
     public static GameSettings Default => new GameSettings()
     {
-        WindowSize = new Size(800, 600),
+        WindowSize = new Size(1024, 768),
         WindowFullscreen = false,
         WindowPosition = new Point(-1),
         DarkMode = false,
         Difficulty = Difficulty.Normal,
-        UiScale = 1
+        UiScale = 100
     };
 }

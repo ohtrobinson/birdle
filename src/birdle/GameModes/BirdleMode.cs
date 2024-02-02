@@ -88,11 +88,12 @@ public class BirdleMode : GameMode
 
         Vector2 position = new Vector2(0, -150);
 
-        foreach (string row in keyboardKeys.Split('\n'))
+        foreach (string row in keyboardKeys.ToUpper().Split('\n'))
         {
             int numKeys = row.Length;
+            Console.WriteLine(numKeys);
 
-            position.X = -(numKeys * (keySize.Width + keySpacing)) / 2;
+            position.X = -(numKeys * (keySize.Width + keySpacing) - keySpacing) / 2 + (keySize.Width / 2);
             
             foreach (char k in row)
             {
@@ -100,7 +101,7 @@ public class BirdleMode : GameMode
                     keyFontSize, () => BirdleGameOnTextInput(k));
                 UI.AddElement(button);
                 
-                _keyboard.Add(char.ToUpper(k), button);
+                _keyboard.Add(k, button);
 
                 position.X += keySize.Width + keySpacing;
             }

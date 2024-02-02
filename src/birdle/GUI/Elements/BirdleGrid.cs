@@ -33,7 +33,7 @@ public class BirdleGrid : UIElement
 
         Font = UI.Font;
         
-        Size = new Size(Columns * (RectangleSize + Spacing), Rows * (RectangleSize + Spacing));
+        Size = new Size(Columns * (RectangleSize + Spacing) - Spacing, Rows * (RectangleSize + Spacing) - Spacing);
     }
 
     public override void Draw(SpriteRenderer renderer, float scale)

@@ -80,20 +80,20 @@ public class SettingsMode : GameMode
         position.Offset.Y += checkBoxSize.Height + spacing;
         position.Offset.X = 0;
         
-        TextElement scaleText = new TextElement(position, UI.Scale.ToString("0.00"), 20);
+        TextElement scaleText = new TextElement(position, UI.Scale + "%", 20);
 
         position.Offset.X = scaleText.Size.Width;
         Button iScaleButton = new Button(position, checkBoxSize, "+", 20, () =>
         {
-            UI.Scale += 0.05f;
-            scaleText.Text = UI.Scale.ToString("0.00");
+            UI.Scale += 5;
+            scaleText.Text = UI.Scale + "%";
         });
 
         position.Offset.X = -scaleText.Size.Width;
         Button dScaleButton = new Button(position, checkBoxSize, "-", 20, () =>
         {
-            UI.Scale -= 0.05f;
-            scaleText.Text = UI.Scale.ToString("0.00");
+            UI.Scale -= 5;
+            scaleText.Text = UI.Scale + "%";
         });
         
         UI.AddElement(scaleText);

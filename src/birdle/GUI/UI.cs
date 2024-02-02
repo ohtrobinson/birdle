@@ -10,8 +10,14 @@ public static class UI
 {
     private static List<UIElement> _elements;
     private static ColorScheme _colorScheme;
-    
-    public static float Scale;
+
+    private static float _scale;
+
+    public static int Scale
+    {
+        get => (int) (MathF.Round(_scale * 100, 3));
+        set => _scale = value / 100f;
+    }
 
     public static Font Font;
 
@@ -27,7 +33,7 @@ public static class UI
         }
     }
 
-    public static void Initialize(Font font, ColorScheme colorScheme, float scale = 1.0f)
+    public static void Initialize(Font font, ColorScheme colorScheme, int scale)
     {
         Scale = scale;
         Font = font;
@@ -58,7 +64,7 @@ public static class UI
                 continue;
             
             element.WorldPosition = CalculateWorldPos(screenSize, element.Position, element.Size);
-            element.Update(dt, Scale, ref mouseCaptured);
+            element.Update(dt, _scale, ref mouseCaptured);
         }
     }
 
@@ -71,7 +77,7 @@ public static class UI
             if (!element.Visible)
                 continue;
             
-            element.Draw(renderer, Scale);
+            element.Draw(renderer, _scale);
         }
         
         renderer.End();
@@ -79,8 +85,8 @@ public static class UI
 
     public static Vector2 CalculateWorldPos(Size screenSize, Position position, Size elementSize)
     {
-        Vector2 scaledOffset = new Vector2((int) (position.Offset.X * Scale), (int) (position.Offset.Y * Scale));
-        Size scaledSize = new Size((int) (elementSize.Width * Scale), (int) (elementSize.Height * Scale));
+        Vector2 scaledOffset = new Vector2((int) (position.Offset.X * _scale), (int) (position.Offset.Y * _scale));
+        Size scaledSize = new Size((int) (elementSize.Width * _scale), (int) (elementSize.Height * _scale));
 
         Vector2 worldPosition = position.Anchor switch
         {
