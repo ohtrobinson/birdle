@@ -71,8 +71,10 @@ public class BootMode : GameMode
 
         int alpha = int.Clamp((int) (_alpha * 255), 0, 255);
         Color color = Color.FromArgb(alpha, UI.ColorScheme.TextColor);
-            
+        
+        BirdleGame.SpriteRenderer.Begin();
         BirdleGame.SpriteRenderer.Draw(_texture, center, color, 0, new Vector2(0.5f * UI.Scale), new Vector2(0.5f));
+        BirdleGame.SpriteRenderer.End();
     }
 
     public override void Dispose()
