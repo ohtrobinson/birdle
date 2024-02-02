@@ -73,7 +73,7 @@ public class BootMode : GameMode
         Color color = Color.FromArgb(alpha, UI.ColorScheme.TextColor);
         
         BirdleGame.SpriteRenderer.Begin();
-        BirdleGame.SpriteRenderer.Draw(_texture, center, color, 0, new Vector2(0.5f * UI.Scale), new Vector2(0.5f));
+        BirdleGame.SpriteRenderer.Draw(_texture, center, color, 0, new Vector2(0.5f * UI.ScaleF), new Vector2(0.5f));
         BirdleGame.SpriteRenderer.End();
     }
 

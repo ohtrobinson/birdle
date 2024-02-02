@@ -242,7 +242,8 @@ public class BirdleMode : GameMode
                 else
                 {
                     slot.State = BirdleGrid.SlotState.Almost;
-                    _keyboard[slot.Character].ColorScheme.EmptyColor = UI.ColorScheme.AlmostColor;
+                    if (_keyboard[slot.Character].ColorScheme.EmptyColor != UI.ColorScheme.GoodColor)
+                        _keyboard[slot.Character].ColorScheme.EmptyColor = UI.ColorScheme.AlmostColor;
                 }
 
                 BirdleGame.Log(LogType.Debug, $"word: {numOccurrencesInWord} guess: {numOccurrencesInGuess}");

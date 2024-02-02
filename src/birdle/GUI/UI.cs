@@ -23,6 +23,8 @@ public static class UI
         }
     }
 
+    public static float ScaleF => _scale;
+
     public static Font Font;
 
     public static ColorScheme ColorScheme
