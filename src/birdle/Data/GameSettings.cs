@@ -62,7 +62,7 @@ public struct GameSettings
 
     public static GameSettings Default => new GameSettings()
     {
-        WindowSize = new Size(1024, 768),
+        WindowSize = new Size(800, 600),
         WindowFullscreen = false,
         WindowPosition = new Point(-1),
         DarkMode = false,

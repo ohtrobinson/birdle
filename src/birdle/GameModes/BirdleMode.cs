@@ -16,7 +16,10 @@ public class BirdleMode : GameMode
 {
     private IGenerator _generator;
     private string _word;
-    private char[,] _grid;
+    private char[] _grid;
+
+    private int _numRows;
+    private int _numColumns;
     
     private BirdleGrid _gridElement;
     private TextElement _temp;
@@ -50,6 +53,7 @@ public class BirdleMode : GameMode
         
         List<string> words = new List<string>();
 
+        // TODO: Don't load words every time the scene is loaded. This should be done on game startup.
         using StreamReader reader = File.OpenText("Content/Words/words5.wb");
         string word;
         while ((word = reader.ReadLine()) != null)
@@ -61,10 +65,10 @@ public class BirdleMode : GameMode
 
         _generator = new WordGenerator(words.ToArray());
         _word = _generator.Generate();
+        
+        _numColumns = _word.Length;
 
-        const int numColumns = 5;
-
-        int numRows = _difficulty switch
+        _numRows = _difficulty switch
         {
             Difficulty.Beginner => 9,
             Difficulty.Easy => 6,
@@ -73,9 +77,9 @@ public class BirdleMode : GameMode
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        _grid = new char[numColumns, numRows];
+        _grid = new char[_numColumns * _numRows];
 
-        _gridElement = new BirdleGrid(new Position(Anchor.TopCenter, new Vector2(0, 20)), numRows, numColumns, 50, 5, 40);
+        _gridElement = new BirdleGrid(new Position(Anchor.TopCenter, new Vector2(0, 20)), _numRows, _numColumns, 50, 5, 40);
         UI.AddElement(_gridElement);
 
         _temp = new TextElement(new Position(Anchor.BottomCenter, new Vector2(0, -100)), "Well done!\nPress space to restart.", 30)
@@ -114,6 +118,19 @@ public class BirdleMode : GameMode
 
             position.Y += keySize.Height + keySpacing;
         }
+
+        position.X = -(100 + keySpacing) / 2;
+        
+        Button enterButton = new Button(new Position(Anchor.BottomCenter, position), new Size(100, 30), "Enter", 20,
+            () => BirdleGameOnKeyDown(Key.Enter, false));
+        UI.AddElement(enterButton);
+        _keyboard.Add('\r', enterButton);
+
+        position.X = (100 + keySpacing) / 2;
+        Button backButton = new Button(new Position(Anchor.BottomCenter, position), new Size(100, 30), "Back", 20,
+            () => BirdleGameOnKeyDown(Key.Backspace, false));
+        UI.AddElement(backButton);
+        _keyboard.Add('\b', backButton);
         
         _fade = new FadeElement(null, 0.5f, true);
         UI.AddElement(_fade);
@@ -173,8 +190,13 @@ public class BirdleMode : GameMode
 
     private void SetCharacter(int column, int row, char c)
     {
-        _grid[column, row] = c;
+        _grid[GetIndex(column, row)] = c;
         _gridElement.Slots[column, row].Character = char.ToUpper(c);
+    }
+
+    private int GetIndex(int column, int row)
+    {
+        return row * _numColumns + column;
     }
 
     private void CheckWord()
@@ -187,11 +209,8 @@ public class BirdleMode : GameMode
 
         if (_difficulty is Difficulty.Normal or Difficulty.Hard)
         {
-            string word = "";
-            // YUCK!!!!
-            // TODO: Replace this utter crap. You need a better system of storing the currently active word.
-            for (int i = 0; i < _gridElement.Columns; i++)
-                word += _grid[i, _currentRow];
+            int index = GetIndex(0, _currentRow);
+            string word = new string(_grid[index..(index + _numColumns)]);
 
             if (!_generator.CheckIfValid(word))
             {
@@ -207,7 +226,7 @@ public class BirdleMode : GameMode
             BirdleGame.Log(LogType.Debug, $"Process column {i}");
             
             ref BirdleGrid.Slot slot = ref _gridElement.Slots[i, _currentRow];
-            char character = _grid[i, _currentRow];
+            char character = _grid[GetIndex(i, _currentRow)];
 
             if (_word[i] == character)
             {
@@ -240,7 +259,8 @@ public class BirdleMode : GameMode
                 int numOccurrencesInGuess = 0;
                 for (int j = 0; j < _gridElement.Columns; j++)
                 {
-                    if (_grid[j, _currentRow] == character && _grid[j, _currentRow] == _word[j])
+                    int index = GetIndex(j, _currentRow);
+                    if (_grid[index] == character && _grid[index] == _word[j])
                         numOccurrencesInGuess++;
                 }
 
