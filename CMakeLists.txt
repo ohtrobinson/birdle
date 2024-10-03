@@ -4,8 +4,10 @@ project(birdle)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(birdle src/main.cpp
-        src/Engine/App.cpp
-        src/Engine/App.h)
+        src/BirdleGame.cpp
+        src/BirdleGame.h
+        src/Window.cpp
+        src/Window.h)
 
 # ----- SDL2 -----
 add_subdirectory(lib/SDL)
