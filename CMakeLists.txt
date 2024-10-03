@@ -19,3 +19,7 @@ if (TARGET SDL2::SDL2main)
 endif()
 
 target_link_libraries(birdle PUBLIC SDL2::SDL2-static)
+
+# ----- GLAD -----
+add_subdirectory(lib/glad)
+target_link_libraries(birdle PUBLIC glad)
