@@ -1,12 +1,12 @@
 ﻿#pragma once
 
-#include <SDL.h>
+#include "Window.h"
 
 namespace birdle {
 
     class BirdleGame {
     private:
-        SDL_Window* _window;
+
 
     public:
         BirdleGame();

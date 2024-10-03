@@ -1,19 +1,28 @@
 ﻿#pragma once
 
+#include "Math/Size.h"
+
 #include <SDL.h>
 
 #include <string>
 
 namespace birdle {
 
+    struct WindowInfo {
+        std::string Title;
+        Math::Size Size;
+    };
+
     class Window {
     private:
         SDL_Window* _window;
-        void* _glContext;
+        SDL_GLContext _glContext;
 
     public:
-        Window(const std::string& title);
+        explicit Window(const WindowInfo& info);
         ~Window();
+
+        SDL_Window* Handle();
     };
 
 }
