@@ -1,14 +1,11 @@
 #include <memory>
 
-#include "Window.h"
+#include "BirdleGame.h"
+
+using namespace birdle;
 
 int main(int argc, char* argv[]) {
-    birdle::WindowInfo info {
-        "Test",
-        { 800, 600 }
-    };
-
-    auto window = std::make_unique<birdle::Window>(info);
+    Game.Run();
 
     return 0;
 }

@@ -8,7 +8,8 @@ add_executable(birdle src/main.cpp
         src/BirdleGame.h
         src/Window.cpp
         src/Window.h
-        src/Math/Size.h)
+        src/Math/Size.h
+)
 
 # ----- SDL2 -----
 add_subdirectory(lib/SDL)
